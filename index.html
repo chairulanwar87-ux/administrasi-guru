@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administrasi Digital Guru V2</title>
   
-  <!-- CDN Tailwind CSS & Lucide Icons -->
+  <!-- CDN Tailwind CSS, Lucide Icons & Dexie DB -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
@@ -18,7 +18,7 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
-    /* Effect Frosted Glass Transparan */
+    /* Glassmorphism Classes */
     .glass-card {
       background: var(--glass-bg, rgba(255, 255, 255, 0.45));
       backdrop-filter: blur(25px);
@@ -64,7 +64,7 @@
     body.dark-mode .text-slate-600, body.dark-mode .text-slate-500 { color: #cbd5e1; }
     body.dark-mode .bg-white\/80, body.dark-mode .bg-white\/90 { background-color: rgba(30, 41, 59, 0.85); color: #fff; }
 
-    /* Custom Color Themes */
+    /* Custom Themes */
     body.theme-blue { --primary-color: #2563eb; }
     body.theme-emerald { --primary-color: #059669; }
     body.theme-purple { --primary-color: #7c3aed; }
@@ -76,7 +76,7 @@
 </head>
 <body id="appBody" class="p-3 md:p-5 min-h-screen text-slate-800 theme-blue">
 
-  <!-- TOP HEADER BAR -->
+  <!-- HEADER BAR -->
   <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-4">
       <div class="relative group cursor-pointer" title="Klik untuk ganti foto profil" onclick="document.getElementById('uploadFoto').click()">
@@ -135,7 +135,6 @@
       </div>
 
       <div class="flex items-center gap-3">
-        <a href="#survei" class="bg-amber-400/30 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-xl hover:bg-amber-400/50 transition">📊 Isi Survei</a>
         <div class="bg-white/80 px-3 py-1 rounded-xl border border-slate-200 text-[11px] flex items-center gap-2">
           <span>🔍 Zoom</span>
           <input type="range" min="80" max="120" value="100" oninput="changeZoom(this.value)" class="w-20 accent-blue-600">
@@ -227,34 +226,55 @@
 
     <!-- SECTION 2: DEVELOPER & PERINGKAT -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- KIRI: TENTANG DEVELOPER -->
       <div class="glass-inner rounded-3xl p-5 flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 mb-3">
             <i data-lucide="info" class="w-5 h-5 theme-active-text"></i>
             <h3 class="font-black text-slate-800 text-base uppercase">Tentang Developer</h3>
           </div>
-          <p class="text-xs text-slate-600 leading-relaxed font-medium mb-6">
+
+          <p class="text-xs text-slate-600 leading-relaxed font-medium mb-4">
             Aplikasi ini dikembangkan oleh <span class="font-extrabold text-sky-600">CHAIRUL ANWAR, S.Pd</span> sebagai project inovasi pendidikan 
             <span class="font-extrabold text-amber-500">"INOVASI WONG BLANGU"</span> semoga bermanfaat bagi rekan-rekan guru.
           </p>
+
+          <!-- WIDGET MOTIVASI & SISTEM -->
+          <div class="glass-item p-3.5 rounded-2xl mb-5 space-y-2 border border-white/60">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                💡 Motivasi Hari Ini
+              </span>
+              <span class="text-[10px] font-semibold text-slate-400">v2.4.0 • System Ready</span>
+            </div>
+            <p class="text-xs italic text-slate-700 font-medium leading-normal">
+              "Mengajar bukan sekadar mentransfer ilmu, tapi menyalakan api rasa ingin tahu dan membentuk karakter manusia."
+            </p>
+          </div>
         </div>
 
+        <!-- 4 ACTION BUTTONS (DENGAN TIKTOK & WHATSAPP DIBERIKAN LINK UPDATE) -->
         <div class="grid grid-cols-2 gap-3 relative">
           <a href="https://www.youtube.com/@caedukasi763" target="_blank" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
             <i data-lucide="youtube" class="w-4 h-4"></i> YOUTUBE
           </a>
-          <button onclick="alert('Anda sudah menggunakan versi V2 terbaru!')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
-            FITUR BARU
-          </button>
+
+          <a href="https://www.tiktok.com/@mr_ca25" target="_blank" class="bg-slate-900 hover:bg-black text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
+            <i data-lucide="video" class="w-4 h-4"></i> TIKTOK
+          </a>
+
           <a href="https://saweria.co/chairulanwar87" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
             <i data-lucide="heart" class="w-4 h-4"></i> DONASI
           </a>
-          <button onclick="window.location.hash='survei'; alert('Terima kasih atas dukungannya!')" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
-            <i data-lucide="clipboard-check" class="w-4 h-4"></i> SURVEI
-          </button>
+
+          <a href="https://wa.me/6285158812938" target="_blank" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> WHATSAPP
+          </a>
         </div>
       </div>
 
+      <!-- KANAN: TOP 5 PERINGKAT KELAS -->
       <div class="glass-inner rounded-3xl p-5">
         <div class="flex items-center gap-2 mb-4">
           <span class="text-xl">🏆</span>
@@ -265,6 +285,7 @@
           <p class="text-xs text-slate-500 italic text-center py-4">Memuat peringkat siswa...</p>
         </div>
       </div>
+
     </div>
 
     <!-- SECTION 3: JADWAL MENGAJAR -->
@@ -278,20 +299,19 @@
           </span>
         </div>
         
-        <!-- TOMBOL TAMBAH JADWAL DENGAN ACTION LANGSUNG -->
         <button id="btnTambahJadwal" onclick="bukaModalJadwal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer z-10">
           <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Jadwal
         </button>
       </div>
 
       <div id="gridJadwalContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Otomatis Diisi Javascript -->
+        <!-- Otomatis Diisi oleh JS -->
       </div>
     </div>
 
   </main>
 
-  <!-- MODAL FORM TAMBAH JADWAL (DIBUAT LEBIH FLEKSIBEL) -->
+  <!-- MODAL FORM TAMBAH JADWAL -->
   <div id="modalJadwal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[999] p-4 hidden">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
       <div class="flex justify-between items-center mb-4">
@@ -495,15 +515,12 @@
       lucide.createIcons();
     }
 
-    // Modal Control Dinamis
     function bukaModalJadwal() {
-      const modal = document.getElementById('modalJadwal');
-      modal.classList.remove('hidden');
+      document.getElementById('modalJadwal').classList.remove('hidden');
     }
 
     function tutupModalJadwal() {
-      const modal = document.getElementById('modalJadwal');
-      modal.classList.add('hidden');
+      document.getElementById('modalJadwal').classList.add('hidden');
     }
 
     async function simpanJadwalBaru() {
