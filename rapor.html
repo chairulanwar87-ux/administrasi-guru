@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cetak Rapor & Leger - Administrasi Digital Guru</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <style>
+    body {
+      background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .glass-card { background: var(--glass-bg, rgba(255, 255, 255, 0.45)); backdrop-filter: blur(25px); border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.6)); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08); }
+    .glass-inner { background: var(--inner-bg, rgba(255, 255, 255, 0.5)); backdrop-filter: blur(15px); border: 1px solid var(--inner-border, rgba(255, 255, 255, 0.7)); }
+    .glass-nav { background: var(--nav-bg, rgba(255, 255, 255, 0.65)); backdrop-filter: blur(15px); border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.8)); }
+    
+    body.dark-mode { --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(255, 255, 255, 0.1); --inner-bg: rgba(30, 41, 59, 0.7); --inner-border: rgba(255, 255, 255, 0.1); --nav-bg: rgba(30, 41, 59, 0.8); --nav-border: rgba(255, 255, 255, 0.1); color: #f1f5f9; }
+    body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { color: #f8fafc; }
+    body.dark-mode .text-slate-600, body.dark-mode .text-slate-500 { color: #cbd5e1; }
+    body.dark-mode input, body.dark-mode select { background-color: rgba(15, 23, 42, 0.8); color: white; border-color: rgba(255,255,255,0.2); }
+
+    body.theme-blue { --primary-color: #2563eb; }
+    body.theme-emerald { --primary-color: #059669; }
+    body.theme-purple { --primary-color: #7c3aed; }
+    body.theme-amber { --primary-color: #d97706; }
+    .theme-active-bg { background-color: var(--primary-color, #2563eb) !important; }
+    .theme-active-text { color: var(--primary-color, #2563eb) !important; }
+
+    /* CSS Khusus Cetak Print PDF */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      header, nav, .no-print { display: none !important; }
+      .glass-card, .glass-inner { background: none !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; }
+      table { border-collapse: collapse !important; width: 100% !important; }
+      th, td { border: 1px solid #000 !important; padding: 6px !important; color: #000 !important; }
+    }
+  </style>
+</head>
+<body id="appBody" class="p-3 md:p-5 min-h-screen text-slate-800 theme-blue">
+
+  <!-- HEADER -->
+  <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="relative group cursor-pointer" onclick="document.getElementById('uploadFoto').click()">
+        <img id="fotoProfil" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
+        <input type="file" id="uploadFoto" accept="image/*" class="hidden" onchange="gantiFoto(event)">
+      </div>
+      <div>
+        <h1 class="text-2xl font-black theme-active-text tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 mt-1">
+          <span id="txtSekolah">SD NEGERI 1 GUWA LOR</span> • <span id="txtGuru">CHAIRUL ANWAR, S.Pd</span> • <span class="italic text-slate-500">"BERGELORA"</span>
+        </div>
+        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
+          <span id="realtimeClock" class="theme-active-text font-mono font-bold">🕒 00:00:00</span>
+          <span id="realtimeDate">...</span>
+          <span class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Sem. Ganjil • 2026/2027</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="relative group">
+        <button title="Pilih Tema Warna" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="palette" class="w-4 h-4"></i></button>
+        <div class="absolute right-0 mt-1 hidden group-hover:flex bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-xl border border-slate-200 gap-2 z-50">
+          <button onclick="setThemeColor('blue')" class="w-6 h-6 rounded-full bg-blue-600 border border-white"></button>
+          <button onclick="setThemeColor('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 border border-white"></button>
+          <button onclick="setThemeColor('purple')" class="w-6 h-6 rounded-full bg-purple-600 border border-white"></button>
+          <button onclick="setThemeColor('amber')" class="w-6 h-6 rounded-full bg-amber-600 border border-white"></button>
+        </div>
+      </div>
+      <div class="bg-white/80 px-2 py-1 rounded-xl flex items-center gap-1 border border-slate-200">
+        <span class="text-xs" id="modeIcon">☀️</span>
+        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" class="toggle accent-blue-600 cursor-pointer">
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGASI TAB HORIZONTAL -->
+  <nav class="flex items-center gap-2 overflow-x-auto pb-2 mb-4">
+    <a href="index.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> DASHBOARD</a>
+    <a href="absensi.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="calendar" class="w-4 h-4"></i> ABSEN HARIAN</a>
+    <a href="profile.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="user" class="w-4 h-4"></i> PROFILE</a>
+    <a href="mapel.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="book-open" class="w-4 h-4"></i> MAPEL</a>
+    <a href="siswa.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="users" class="w-4 h-4"></i> DATA SISWA</a>
+    <a href="nilai.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="star" class="w-4 h-4"></i> NILAI SISWA</a>
+    <a href="rekap.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="clipboard-list" class="w-4 h-4"></i> REKAP ABSEN</a>
+    <a href="rapor.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl theme-active-bg text-white font-bold text-xs shadow-md"><i data-lucide="printer" class="w-4 h-4"></i> CETAK</a>
+    <a href="modul.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="folder" class="w-4 h-4"></i> RPP / MODUL</a>
+  </nav>
+
+  <!-- KONTEN UTAMA CETAK LEGER -->
+  <main class="glass-card rounded-3xl p-6 space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/50 pb-4 no-print">
+      <div>
+        <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide flex items-center gap-2">
+          <i data-lucide="file-text" class="w-6 h-6 theme-active-text"></i> Leger Nilai & Rapor Siswa
+        </h2>
+        <p class="text-xs font-semibold text-slate-500 mt-0.5">Rekapitulasi nilai rata-rata seluruh mata pelajaran.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5">
+          <i data-lucide="printer" class="w-4 h-4"></i> Cetak Leger
+        </button>
+        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5">
+          <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- TABEL LEGER NILAI -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left" id="tabelLegerExport">
+        <thead>
+          <tr id="headerMapel" class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200/60">
+            <th class="py-3 px-4 w-12 text-center">NO</th>
+            <th class="py-3 px-4">NISN</th>
+            <th class="py-3 px-4">NAMA SISWA</th>
+            <!-- Mapel Header di-render via JS -->
+            <th class="py-3 px-4 text-center font-black theme-active-text">RATA2</th>
+          </tr>
+        </thead>
+        <tbody id="tabelLeger" class="divide-y divide-slate-200/50 text-xs font-medium">
+          <!-- Render via JS -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const db = new Dexie('AdminGuruDB');
+    db.version(1).stores({
+      siswa: '++id, nisn, nama, gender, jk',
+      mapel: '++id, nama, kkm, jp',
+      nilai: '++id, siswaId, mapelId, t1, t2, pts, pas'
+    });
+
+    function startClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('realtimeClock').innerText = '🕒 ' + now.toLocaleTimeString('id-ID');
+        document.getElementById('realtimeDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      }, 1000);
+    }
+
+    function setThemeColor(c) {
+      document.getElementById('appBody').className = `p-3 md:p-5 min-h-screen text-slate-800 theme-${c}` + (document.getElementById('darkModeToggle').checked ? ' dark-mode' : '');
+      localStorage.setItem('prefThemeColor', c);
+    }
+
+    function toggleDarkMode(d) {
+      document.getElementById('appBody').classList.toggle('dark-mode', d);
+      document.getElementById('modeIcon').innerText = d ? '🌙' : '☀️';
+      localStorage.setItem('prefDarkMode', d);
+    }
+
+    function gantiFoto(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          document.getElementById('fotoProfil').src = ev.target.result;
+          localStorage.setItem('fotoGuruURL', ev.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function loadLeger() {
+      const siswaList = await db.siswa.toArray();
+      const mapelList = await db.mapel.toArray();
+      const nilaiList = await db.nilai.toArray();
+
+      // Render Mapel Headers
+      const headerRow = document.getElementById('headerMapel');
+      headerRow.innerHTML = `
+        <th class="py-3 px-4 w-12 text-center">NO</th>
+        <th class="py-3 px-4">NISN</th>
+        <th class="py-3 px-4">NAMA SISWA</th>
+      `;
+      
+      mapelList.forEach(m => {
+        headerRow.innerHTML += `<th class="py-3 px-3 text-center uppercase">${m.nama}</th>`;
+      });
+      headerRow.innerHTML += `<th class="py-3 px-4 text-center font-black theme-active-text">RATA2</th>`;
+
+      // Render Body
+      const tbody = document.getElementById('tabelLeger');
+      tbody.innerHTML = '';
+
+      if (siswaList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${4 + mapelList.length}" class="text-center py-6 text-slate-500 font-bold">Belum ada data siswa.</td></tr>`;
+        return;
+      }
+
+      siswaList.forEach((s, idx) => {
+        let mapelTd = '';
+        let totalNilaiSiswa = 0;
+        let countMapel = 0;
+
+        mapelList.forEach(m => {
+          const n = nilaiList.find(x => x.siswaId === s.id && x.mapelId === m.id);
+          if (n) {
+            const rataMapel = Math.round((Number(n.t1) + Number(n.t2) + Number(n.pts) + Number(n.pas)) / 4);
+            mapelTd += `<td class="py-3 px-3 text-center font-bold text-slate-700">${rataMapel}</td>`;
+            totalNilaiSiswa += rataMapel;
+            countMapel++;
+          } else {
+            mapelTd += `<td class="py-3 px-3 text-center text-slate-400">-</td>`;
+          }
+        });
+
+        const rataTotal = countMapel > 0 ? (totalNilaiSiswa / countMapel).toFixed(1) : '0.0';
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-white/40 transition">
+            <td class="py-3 px-4 text-center font-bold text-slate-500">${idx + 1}</td>
+            <td class="py-3 px-4 font-mono font-bold theme-active-text">${s.nisn || '-'}</td>
+            <td class="py-3 px-4 font-bold text-slate-800 uppercase">${s.nama}</td>
+            ${mapelTd}
+            <td class="py-3 px-4 text-center font-black text-sm theme-active-text">${rataTotal}</td>
+          </tr>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function exportExcel() {
+      const table = document.getElementById('tabelLegerExport');
+      const wb = XLSX.utils.table_to_book(table, { sheet: "Leger Rapor" });
+      XLSX.writeFile(wb, `Leger_Rapor_Nilai.xlsx`);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons(); startClock();
+      if(localStorage.getItem('txtGuru')) document.getElementById('txtGuru').innerText = localStorage.getItem('txtGuru');
+      if(localStorage.getItem('txtSekolah')) document.getElementById('txtSekolah').innerText = localStorage.getItem('txtSekolah');
+      if(localStorage.getItem('fotoGuruURL')) document.getElementById('fotoProfil').src = localStorage.getItem('fotoGuruURL');
+
+      const savedTheme = localStorage.getItem('prefThemeColor'); if(savedTheme) setThemeColor(savedTheme);
+      const savedDark = localStorage.getItem('prefDarkMode') === 'true'; if(savedDark) { document.getElementById('darkModeToggle').checked = true; toggleDarkMode(true); }
+
+      loadLeger();
+    });
+  </script>
+</body>
+</html>
