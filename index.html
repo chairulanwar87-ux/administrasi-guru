@@ -289,13 +289,18 @@
 
     <!-- SECTION 3: JADWAL MENGAJAR -->
     <div class="mt-8">
-      <div class="flex items-center gap-3 mb-4">
+      <div class="flex items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-3">
         <i data-lucide="calendar-days" class="w-6 h-6 text-purple-600"></i>
         <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase">Jadwal Mengajar</h2>
-        <span id="badgeKelasJadwal" class="bg-purple-200/80 text-purple-800 text-xs font-extrabold px-3 py-1 rounded-full border border-purple-300 shadow-sm">
+        <span id="badgeKelasJadwal" class="bg-purple-200/80 text-purple-800 text-xs font-extrabold px-3 py-1 rounded-full">
           Kelas 4
         </span>
       </div>
+      <button onclick="bukaModalJadwal()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition">
+        + Tambah Jadwal
+      </button>
+    </div>
 
       <!-- GRID JADWAL MENGAJAR -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
