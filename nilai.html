@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nilai Siswa - Administrasi Guru</title>
+    <title>Rekap Nilai Siswa - Administrasi Guru</title>
     <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Library SheetJS untuk Export Excel -->
+    <!-- XLSX / SheetJS Library -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <style>
@@ -17,18 +17,43 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
-        /* Sembunyikan elemen dekorasi saat dicetak/PDF */
+        .glass-input {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+        }
+
+        /* STYLING SAAT DICETAK PDF */
         @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
             .no-print {
                 display: none !important;
             }
-            body {
-                background: white !important;
-            }
             .glass-card {
-                background: white !important;
+                background: none !important;
                 border: none !important;
                 box-shadow: none !important;
+                padding: 0 !important;
+            }
+            #areaCetak {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 6px 10px !important;
+                color: black !important;
+            }
+            input[type="number"] {
+                border: none !important;
+                background: transparent !important;
+                text-align: center !important;
             }
         }
     </style>
@@ -37,11 +62,11 @@
 
     <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-        <!-- HEADER / NAVBAR (Sembunyi saat cetak) -->
+        <!-- HEADER / NAVBAR -->
         <header class="p-4 md:px-8 no-print">
             <div class="max-w-5xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
                 <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="star" class="w-5 h-5 text-indigo-600"></i> REKAP NILAI SISWA
+                    <i data-lucide="calculator" class="w-5 h-5 text-indigo-600"></i> REKAP NILAI SISWA
                 </h1>
                 <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
@@ -51,21 +76,32 @@
 
         <!-- CONTENT UTAMA -->
         <main class="max-w-5xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
-            <div class="glass-card rounded-2xl p-6 md:p-8 shadow-xl">
-                
-                <!-- HEADER LAPORAN & TOMBOL EKSPOR -->
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                    <div>
-                        <h2 class="text-xl font-extrabold text-slate-800">Daftar Nilai Siswa</h2>
-                        <p class="text-xs text-slate-600">Rekapitulasi Nilai Tugas, UTS, dan UAS.</p>
-                    </div>
 
-                    <!-- TOMBOL EKSPOR (Sembunyi saat cetak) -->
-                    <div class="flex gap-2 no-print">
-                        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Unduh Excel
+            <!-- AREA TABEL NILAI SISWA -->
+            <div id="areaCetak" class="glass-card rounded-2xl p-6 shadow-xl">
+                
+                <!-- JUDUL UNTUK PDF CETAK -->
+                <div class="hidden print:block text-center mb-6">
+                    <h1 class="text-xl font-bold uppercase tracking-wider">REKAPITULASI NILAI SISWA</h1>
+                    <p class="text-xs text-gray-600">Rekapitulasi Nilai Tugas, UTS, dan UAS</p>
+                    <hr class="border-black mt-2">
+                </div>
+
+                <!-- HEADER DALAM KARTU (NO-PRINT) -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 no-print">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Daftar Nilai Siswa</h2>
+                        <p class="text-xs text-slate-600">Isi langsung nilai pada kolom Tugas, UTS, dan UAS. Rata-rata terhitung otomatis.</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="simpanSemuaNilai()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> SIMPAN NILAI
                         </button>
-                        <button onclick="window.print()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                            <i data-lucide="download" class="w-4 h-4"></i> Unduh Excel
+                        </button>
+                        <button onclick="cetakPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
                             <i data-lucide="printer" class="w-4 h-4"></i> Cetak / PDF
                         </button>
                     </div>
@@ -73,47 +109,25 @@
 
                 <!-- TABEL DATA NILAI -->
                 <div class="overflow-x-auto rounded-xl border border-slate-200">
-                    <table id="tabelNilai" class="w-full text-xs text-left text-slate-700 bg-white/70">
+                    <table class="w-full text-xs text-left text-slate-700 bg-white/70">
                         <thead class="text-xs text-slate-800 uppercase bg-slate-200/80 border-b border-slate-300">
                             <tr>
-                                <th scope="col" class="px-4 py-3 text-center">No</th>
-                                <th scope="col" class="px-4 py-3">Nama Siswa</th>
-                                <th scope="col" class="px-4 py-3 text-center">Tugas</th>
-                                <th scope="col" class="px-4 py-3 text-center">UTS</th>
-                                <th scope="col" class="px-4 py-3 text-center">UAS</th>
-                                <th scope="col" class="px-4 py-3 text-center">Rata-Rata</th>
+                                <th scope="col" class="px-4 py-3 text-center w-12">NO</th>
+                                <th scope="col" class="px-4 py-3">NAMA SISWA</th>
+                                <th scope="col" class="px-4 py-3 text-center w-28">TUGAS</th>
+                                <th scope="col" class="px-4 py-3 text-center w-28">UTS</th>
+                                <th scope="col" class="px-4 py-3 text-center w-28">UAS</th>
+                                <th scope="col" class="px-4 py-3 text-center w-28">RATA-RATA</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200">
-                            <tr class="hover:bg-slate-100/50">
-                                <td class="px-4 py-3 text-center font-bold">1</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Ahmad Fauzi</td>
-                                <td class="px-4 py-3 text-center font-bold">85</td>
-                                <td class="px-4 py-3 text-center font-bold">80</td>
-                                <td class="px-4 py-3 text-center font-bold">90</td>
-                                <td class="px-4 py-3 text-center text-indigo-600 font-extrabold">85.0</td>
-                            </tr>
-                            <tr class="hover:bg-slate-100/50">
-                                <td class="px-4 py-3 text-center font-bold">2</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Biti Anisa</td>
-                                <td class="px-4 py-3 text-center font-bold">90</td>
-                                <td class="px-4 py-3 text-center font-bold">88</td>
-                                <td class="px-4 py-3 text-center font-bold">92</td>
-                                <td class="px-4 py-3 text-center text-indigo-600 font-extrabold">90.0</td>
-                            </tr>
-                            <tr class="hover:bg-slate-100/50">
-                                <td class="px-4 py-3 text-center font-bold">3</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Citra Lestari</td>
-                                <td class="px-4 py-3 text-center font-bold">78</td>
-                                <td class="px-4 py-3 text-center font-bold">75</td>
-                                <td class="px-4 py-3 text-center font-bold">80</td>
-                                <td class="px-4 py-3 text-center text-indigo-600 font-extrabold">77.6</td>
-                            </tr>
+                        <tbody id="tabelNilaiBody" class="divide-y divide-slate-200">
+                            <!-- Data otomatis diisi via JS -->
                         </tbody>
                     </table>
                 </div>
 
             </div>
+
         </main>
 
         <footer class="text-center py-4 text-xs text-white/80 font-medium no-print">
@@ -121,16 +135,125 @@
         </footer>
     </div>
 
-    <!-- SCRIPT JAVASCRIPT -->
+    <!-- SCRIPT JAVASCRIPT LOGIKA NILAI -->
     <script>
         lucide.createIcons();
 
-        // Fungsi Download Excel
-        function exportExcel() {
-            var tabel = document.getElementById("tabelNilai"); 
-            var wb = XLSX.utils.table_to_book(tabel, { sheet: "Nilai Siswa" });
-            XLSX.writeFile(wb, "Daftar_Nilai_Siswa.xlsx");
+        // 1. Ambil Data Siswa & Data Nilai dari LocalStorage
+        let dataSiswa = JSON.parse(localStorage.getItem('dataSiswaGuru')) || [
+            { id: 1, nama: "Ahmad Fauzi" },
+            { id: 2, nama: "Biti Anisa" },
+            { id: 3, nama: "Citra Lestari" }
+        ];
+
+        let dataNilai = JSON.parse(localStorage.getItem('dataNilaiGuru')) || {};
+
+        // 2. Render Tabel Nilai dengan Input Langsung
+        function renderTabelNilai() {
+            const tbody = document.getElementById('tabelNilaiBody');
+            tbody.innerHTML = '';
+
+            if (dataSiswa.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-slate-500">Belum ada data siswa. Tambahkan siswa terlebih dahulu di menu Data Siswa.</td></tr>`;
+                return;
+            }
+
+            dataSiswa.forEach((siswa, index) => {
+                const nilaiSiswa = dataNilai[siswa.id] || { tugas: 0, uts: 0, uas: 0 };
+                const rataRata = hitungRataRata(nilaiSiswa.tugas, nilaiSiswa.uts, nilaiSiswa.uas);
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-100/50">
+                        <td class="px-4 py-3 text-center font-bold">${index + 1}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-900">${siswa.nama}</td>
+                        <td class="px-2 py-2 text-center">
+                            <input type="number" min="0" max="100" value="${nilaiSiswa.tugas}" 
+                                oninput="updateNilai(${siswa.id}, 'tugas', this.value, ${index})" 
+                                class="w-20 text-center py-1.5 glass-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-800">
+                        </td>
+                        <td class="px-2 py-2 text-center">
+                            <input type="number" min="0" max="100" value="${nilaiSiswa.uts}" 
+                                oninput="updateNilai(${siswa.id}, 'uts', this.value, ${index})" 
+                                class="w-20 text-center py-1.5 glass-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-800">
+                        </td>
+                        <td class="px-2 py-2 text-center">
+                            <input type="number" min="0" max="100" value="${nilaiSiswa.uas}" 
+                                oninput="updateNilai(${siswa.id}, 'uas', this.value, ${index})" 
+                                class="w-20 text-center py-1.5 glass-input rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold text-slate-800">
+                        </td>
+                        <td class="px-4 py-3 text-center font-extrabold text-indigo-600 text-sm" id="rata-${index}">
+                            ${rataRata}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            lucide.createIcons();
         }
+
+        // 3. Hitung Rata-Rata Nilai
+        function hitungRataRata(tugas, uts, uas) {
+            const t = parseFloat(tugas) || 0;
+            const ut = parseFloat(uts) || 0;
+            const ua = parseFloat(uas) || 0;
+            return ((t + ut + ua) / 3).toFixed(1);
+        }
+
+        // 4. Real-time Update Nilai saat Diketik
+        function updateNilai(siswaId, jenis, nilai, index) {
+            if (!dataNilai[siswaId]) {
+                dataNilai[siswaId] = { tugas: 0, uts: 0, uas: 0 };
+            }
+            dataNilai[siswaId][jenis] = parseFloat(nilai) || 0;
+
+            // Hitung ulang Rata-Rata langsung
+            const n = dataNilai[siswaId];
+            const rataBaru = hitungRataRata(n.tugas, n.uts, n.uas);
+            document.getElementById(`rata-${index}`).innerText = rataBaru;
+
+            // Simpan Otomatis ke LocalStorage
+            localStorage.setItem('dataNilaiGuru', JSON.stringify(dataNilai));
+        }
+
+        // 5. Tombol Simpan Nilai Manual
+        function simpanSemuaNilai() {
+            localStorage.setItem('dataNilaiGuru', JSON.stringify(dataNilai));
+            alert("Nilai seluruh siswa berhasil disimpan!");
+        }
+
+        // 6. Export Excel
+        function exportExcel() {
+            if (dataSiswa.length === 0) {
+                alert("Tidak ada data nilai untuk diexport!");
+                return;
+            }
+
+            const dataExport = dataSiswa.map((siswa, index) => {
+                const n = dataNilai[siswa.id] || { tugas: 0, uts: 0, uas: 0 };
+                return {
+                    "NO": index + 1,
+                    "NAMA SISWA": siswa.nama,
+                    "TUGAS": n.tugas,
+                    "UTS": n.uts,
+                    "UAS": n.uas,
+                    "RATA-RATA": hitungRataRata(n.tugas, n.uts, n.uas)
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(dataExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Nilai Siswa");
+
+            XLSX.writeFile(workbook, "Rekap_Nilai_Siswa.xlsx");
+        }
+
+        // 7. Cetak PDF
+        function cetakPDF() {
+            window.print();
+        }
+
+        // Jalankan saat dimuat
+        renderTabelNilai();
     </script>
 </body>
 </html>
