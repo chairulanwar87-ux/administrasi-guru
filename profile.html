@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Sekolah & Guru - Administrasi Guru</title>
+    <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -18,14 +19,14 @@
 
     <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-        <!-- HEADER -->
+        <!-- HEADER / NAVBAR -->
         <header class="p-4 md:px-8">
             <div class="max-w-3xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
                 <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <i data-lucide="user-check" class="w-5 h-5 text-indigo-600"></i> PROFIL SEKOLAH & GURU
                 </h1>
-                <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
+                <a href="rapor.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
+                    <i data-lucide="file-text" class="w-4 h-4"></i> LIHAT RAPOR
                 </a>
             </div>
         </header>
@@ -47,10 +48,14 @@
                         <input type="text" id="namaSekolah" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800" placeholder="Contoh: SD NEGERI 1 GUWA LOR">
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-1">Kelas:</label>
+                            <input type="text" id="kelas" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" placeholder="Contoh: VI (Enam)">
+                        </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Tahun Ajaran:</label>
-                            <input type="text" id="tahunAjaran" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" placeholder="Contoh: 2025/2026">
+                            <input type="text" id="tahunAjaran" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" placeholder="Contoh: 2026/2027">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-1">Semester:</label>
@@ -78,7 +83,7 @@
                         </div>
                     </div>
 
-                    <div class="pt-4 flex justify-end">
+                    <div class="pt-4 flex justify-end gap-2">
                         <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md flex items-center gap-2">
                             <i data-lucide="save" class="w-4 h-4"></i> Simpan Profil
                         </button>
@@ -89,43 +94,48 @@
         </main>
     </div>
 
+    <!-- JAVASCRIPT LOGIK KONEKSI -->
     <script>
         lucide.createIcons();
 
-        // 1. Muat data saat halaman dibuka
+        // 1. Memuat data profil dari LocalStorage saat halaman pertama kali dibuka
         function muatProfil() {
             const profil = JSON.parse(localStorage.getItem('profilSekolahGuru')) || {
                 namaSekolah: "SD NEGERI 1 GUWA LOR",
-                tahunAjaran: "2025/2026",
+                kelas: "VI (Enam)",
+                tahunAjaran: "2026/2027",
                 semester: "1 (Ganjil)",
                 namaGuru: "Budi Santoso, S.Pd.",
                 nipGuru: "-"
             };
 
             document.getElementById('namaSekolah').value = profil.namaSekolah;
+            document.getElementById('kelas').value = profil.kelas || "VI (Enam)";
             document.getElementById('tahunAjaran').value = profil.tahunAjaran;
             document.getElementById('semester').value = profil.semester;
             document.getElementById('namaGuru').value = profil.namaGuru;
-            document.getElementById('nipGuru').value = profil.nipGuru || "";
+            document.getElementById('nipGuru').value = profil.nipGuru === "-" ? "" : (profil.nipGuru || "");
         }
 
-        // 2. Simpan data ke LocalStorage
+        // 2. Menyimpan data profil ke LocalStorage
         function simpanProfil(e) {
             e.preventDefault();
 
             const profilData = {
                 namaSekolah: document.getElementById('namaSekolah').value,
+                kelas: document.getElementById('kelas').value,
                 tahunAjaran: document.getElementById('tahunAjaran').value,
                 semester: document.getElementById('semester').value,
                 namaGuru: document.getElementById('namaGuru').value,
-                nipGuru: document.getElementById('nipGuru').value
+                nipGuru: document.getElementById('nipGuru').value || "-"
             };
 
             localStorage.setItem('profilSekolahGuru', JSON.stringify(profilData));
-            alert("Profil Sekolah & Guru Berhasil Disimpan!");
+            alert("Profil Sekolah, Kelas & Guru Berhasil Disimpan!");
         }
 
-        muatProfil();
+        // Jalankan fungsi muatProfil saat halaman selesai loading
+        document.addEventListener('DOMContentLoaded', muatProfil);
     </script>
 </body>
 </html>
