@@ -670,7 +670,7 @@
   <source src="Bayalangu.mp3" type="audio/mpeg">
 </audio>
 
-<!-- TOMBOL MUSIK MELAYANG -->
+<!-- TOMBOL MUSIK MELAYANG DI POJOK KANAN BAWAH -->
 <button id="musicBtn" onclick="toggleMusic()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #2563eb; color: white; border: none; padding: 10px 18px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
   🎵 Putar Musik
 </button>
@@ -679,31 +679,37 @@
   var audio = document.getElementById("bgMusic");
   var btn = document.getElementById("musicBtn");
 
+  // Fungsi untuk menyalakan/mematikan musik lewat tombol
   function toggleMusic() {
     if (audio.paused) {
       audio.play().then(() => {
         btn.innerHTML = "⏸️ Hentikan Musik";
-        btn.style.background = "#dc2626"; // Berubah merah saat berputar
+        btn.style.background = "#dc2626"; // Tombol jadi MERAH saat musik jalan
       }).catch(err => {
-        alert("Gagal memutar audio! Pastikan browser diizinkan memutar suara.");
+        alert("Gagal memutar suara! Pastikan browser diizinkan memutar audio.");
       });
     } else {
       audio.pause();
       btn.innerHTML = "🎵 Putar Musik";
-      btn.style.background = "#2563eb"; // Berubah biru saat mati
+      btn.style.background = "#2563eb"; // Tombol jadi BIRU saat musik mati
     }
   }
 
-  // Coba putar otomatis saat pengunjung klik pertama kali di mana saja pada layar
+  // FITUR UTAMA: Coba putar otomatis saat klik pertama di mana saja pada layar
   document.addEventListener('click', function() {
     if (audio.paused) {
       audio.play().then(() => {
         btn.innerHTML = "⏸️ Hentikan Musik";
         btn.style.background = "#dc2626";
-      }).catch(() => {});
+      }).catch(() => {
+        // Jika autoplay diblokir total, tombol tetap biru "Putar Musik"
+      });
     }
-  }, { once: true });
+  }, { once: true }); // Hanya berjalan sekali saat klik pertama
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
