@@ -3,11 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panduan Penggunaan</title>
+    <title>Panduan Penggunaan - Administrasi Guru</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Halaman Panduan</h1>
-    <p>Ini adalah halaman panduan penggunaan.</p>
-    <a href="index.html">Kembali ke Beranda</a>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i class="fa-solid fa-book-open"></i> Panduan Penggunaan
+            </h1>
+            <a href="index.html" class="inline-flex items-center gap-2 bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-lg text-sm transition">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+            </a>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-6 py-8 flex-1 w-full">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Selamat Datang di Aplikasi Administrasi Guru</h2>
+                <p class="text-slate-600">Panduan singkat ini akan membantu Anda memahami fitur-fitur utama yang ada di dalam aplikasi.</p>
+            </div>
+
+            <hr class="border-slate-200">
+
+            <!-- Fitur List -->
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-users"></i> Kelola Data Siswa
+                    </h3>
+                    <p class="text-sm text-slate-600">Tambah, edit, dan atur data siswa serta kelas dengan mudah.</p>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-clipboard-user"></i> Absensi & Presensi
+                    </h3>
+                    <p class="text-sm text-slate-600">Pencatatan kehadiran harian siswa secara digital dan real-time.</p>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-book"></i> Modul & Mapel
+                    </h3>
+                    <p class="text-sm text-slate-600">Atur mata pelajaran dan materi pembelajaran yang diampu.</p>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
+                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-file-invoice"></i> Laporan & Rekap
+                    </h3>
+                    <p class="text-sm text-slate-600">Unduh atau cetak rekapitulasi data administrasi dalam satu klik.</p>
+                </div>
+            </div>
+
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+                <p class="text-sm text-indigo-900 font-medium">
+                    <i class="fa-solid fa-circle-info mr-1"></i> Catatan:
+                </p>
+                <p class="text-sm text-indigo-800 mt-1">
+                    Aplikasi ini berbasis Progressive Web App (PWA), sehingga dapat diakses secara offline setelah pertama kali dimuat.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-200 bg-white">
+        &copy; Aplikasi Administrasi Guru.
+    </footer>
+
 </body>
 </html>
