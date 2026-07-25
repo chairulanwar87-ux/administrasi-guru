@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Absen - Administrasi Guru</title>
+    <title>Laporan Rekap Absensi - Administrasi Guru</title>
     <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Library SheetJS untuk Export Excel -->
+    <!-- XLSX / SheetJS Library -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <style>
@@ -17,23 +17,34 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
-        .glass-item {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-        /* Sembunyikan elemen dekorasi saat dicetak/PDF */
+
+        /* STYLING DICETAK PDF */
         @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
             .no-print {
                 display: none !important;
             }
-            body {
-                background: white !important;
-            }
             .glass-card {
-                background: white !important;
+                background: none !important;
                 border: none !important;
                 box-shadow: none !important;
+                padding: 0 !important;
+            }
+            #areaCetak {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 8px !important;
+                color: black !important;
             }
         }
     </style>
@@ -42,11 +53,11 @@
 
     <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-        <!-- HEADER / NAVBAR (Sembunyi saat cetak) -->
+        <!-- HEADER / NAVBAR -->
         <header class="p-4 md:px-8 no-print">
             <div class="max-w-5xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
                 <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-600"></i> REKAP ABSENSI SISWA
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 text-indigo-600"></i> LAPORAN REKAP ABSENSI
                 </h1>
                 <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
@@ -56,69 +67,56 @@
 
         <!-- CONTENT UTAMA -->
         <main class="max-w-5xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
-            <div class="glass-card rounded-2xl p-6 md:p-8 shadow-xl">
+
+            <!-- AREA TABEL REKAP ABSENSI -->
+            <div id="areaCetak" class="glass-card rounded-2xl p-6 shadow-xl">
                 
-                <!-- HEADER LAPORAN & TOMBOL EKSPOR -->
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <!-- JUDUL CETAK PDF -->
+                <div class="hidden print:block text-center mb-6">
+                    <h1 class="text-xl font-bold uppercase tracking-wider">LAPORAN REKAPITULASI ABSENSI SISWA</h1>
+                    <p class="text-xs text-gray-600 mt-1">Rekapitulasi kehadiran siswa semester berjalan.</p>
+                    <hr class="border-black mt-2">
+                </div>
+
+                <!-- HEADER DALAM KARTU (NO-PRINT) -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 no-print">
                     <div>
-                        <h2 class="text-xl font-extrabold text-slate-800">Laporan Rekap Absensi</h2>
-                        <p class="text-xs text-slate-600">Rekapitulasi kehadiran siswa semester berjalan.</p>
+                        <h2 class="text-lg font-bold text-slate-800">Laporan Rekap Absensi</h2>
+                        <p class="text-xs text-slate-600">Rekapitulasi total akumulasi kehadiran siswa.</p>
                     </div>
 
-                    <!-- TOMBOL EKSPOR (Sembunyi saat cetak) -->
-                    <div class="flex gap-2 no-print">
-                        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Unduh Excel
+                    <!-- ACTION BUTTONS -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
+                            <i data-lucide="download" class="w-4 h-4"></i> Unduh Excel
                         </button>
-                        <button onclick="window.print()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                        <button onclick="cetakPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
                             <i data-lucide="printer" class="w-4 h-4"></i> Cetak / PDF
                         </button>
                     </div>
                 </div>
 
-                <!-- TABEL DATA ABSENSI -->
+                <!-- TABEL DATA REKAP -->
                 <div class="overflow-x-auto rounded-xl border border-slate-200">
-                    <table id="tabelSiswa" class="w-full text-xs text-left text-slate-700 bg-white/70">
+                    <table class="w-full text-xs text-left text-slate-700 bg-white/70">
                         <thead class="text-xs text-slate-800 uppercase bg-slate-200/80 border-b border-slate-300">
                             <tr>
-                                <th scope="col" class="px-4 py-3 text-center">No</th>
-                                <th scope="col" class="px-4 py-3">Nama Siswa</th>
-                                <th scope="col" class="px-4 py-3 text-center">Hadir (H)</th>
-                                <th scope="col" class="px-4 py-3 text-center">Izin (I)</th>
-                                <th scope="col" class="px-4 py-3 text-center">Sakit (S)</th>
-                                <th scope="col" class="px-4 py-3 text-center">Alpa (A)</th>
+                                <th scope="col" class="px-4 py-3 text-center w-12">NO</th>
+                                <th scope="col" class="px-4 py-3">NAMA SISWA</th>
+                                <th scope="col" class="px-4 py-3 text-center text-emerald-700 font-bold">HADIR (H)</th>
+                                <th scope="col" class="px-4 py-3 text-center text-sky-700 font-bold">IZIN (I)</th>
+                                <th scope="col" class="px-4 py-3 text-center text-amber-700 font-bold">SAKIT (S)</th>
+                                <th scope="col" class="px-4 py-3 text-center text-rose-700 font-bold">ALPA (A)</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200">
-                            <tr class="hover:bg-slate-100/50">
-                                <td class="px-4 py-3 text-center font-bold">1</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Ahmad Fauzi</td>
-                                <td class="px-4 py-3 text-center text-emerald-600 font-bold">18</td>
-                                <td class="px-4 py-3 text-center text-blue-600 font-bold">1</td>
-                                <td class="px-4 py-3 text-center text-amber-600 font-bold">0</td>
-                                <td class="px-4 py-3 text-center text-rose-600 font-bold">0</td>
-                            </tr>
-                            <tr class="hover:bg-slate-100/50">
-                                <td class="px-4 py-3 text-center font-bold">2</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Biti Anisa</td>
-                                <td class="px-4 py-3 text-center text-emerald-600 font-bold">19</td>
-                                <td class="px-4 py-3 text-center text-blue-600 font-bold">0</td>
-                                <td class="px-4 py-3 text-center text-amber-600 font-bold">0</td>
-                                <td class="px-4 py-3 text-center text-rose-600 font-bold">0</td>
-                            </tr>
-                            <tr class="hover:bg-slate-100/50">
-                                <td class="px-4 py-3 text-center font-bold">3</td>
-                                <td class="px-4 py-3 font-semibold text-slate-900">Citra Lestari</td>
-                                <td class="px-4 py-3 text-center text-emerald-600 font-bold">16</td>
-                                <td class="px-4 py-3 text-center text-blue-600 font-bold">1</td>
-                                <td class="px-4 py-3 text-center text-amber-600 font-bold">2</td>
-                                <td class="px-4 py-3 text-center text-rose-600 font-bold">0</td>
-                            </tr>
+                        <tbody id="tabelRekapBody" class="divide-y divide-slate-200">
+                            <!-- Data otomatis diisi via JS -->
                         </tbody>
                     </table>
                 </div>
 
             </div>
+
         </main>
 
         <footer class="text-center py-4 text-xs text-white/80 font-medium no-print">
@@ -126,16 +124,93 @@
         </footer>
     </div>
 
-    <!-- SCRIPT JAVASCRIPT -->
+    <!-- SCRIPT LOGIKA JAVASCRIPT -->
     <script>
         lucide.createIcons();
 
-        // Fungsi Download Excel
-        function exportExcel() {
-            var tabel = document.getElementById("tabelSiswa"); 
-            var wb = XLSX.utils.table_to_book(tabel, { sheet: "Rekap Absen" });
-            XLSX.writeFile(wb, "Rekap_Absensi_Siswa.xlsx");
+        // 1. Murni mengambil data siswa dari LocalStorage (tanpa nama dummy)
+        let dataSiswa = JSON.parse(localStorage.getItem('dataSiswaGuru')) || [];
+        let rekapAbsen = JSON.parse(localStorage.getItem('rekapAbsenGuru')) || {};
+
+        function renderRekap() {
+            const tbody = document.getElementById('tabelRekapBody');
+            tbody.innerHTML = '';
+
+            // Jika belum ada siswa sama sekali
+            if (dataSiswa.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-500 font-semibold">Belum ada data siswa. Silahkan tambahkan siswa terlebih dahulu.</td></tr>`;
+                return;
+            }
+
+            // Hitung akumulasi untuk setiap siswa dari seluruh tanggal yang tersimpan
+            dataSiswa.forEach((siswa, index) => {
+                let totalHadir = 0;
+                let totalIzin = 0;
+                let totalSakit = 0;
+                let totalAlpa = 0;
+
+                // Loop setiap tanggal absensi
+                Object.keys(rekapAbsen).forEach(tgl => {
+                    const status = rekapAbsen[tgl][siswa.id];
+                    if (status === 'H') totalHadir++;
+                    else if (status === 'I') totalIzin++;
+                    else if (status === 'S') totalSakit++;
+                    else if (status === 'A') totalAlpa++;
+                });
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-100/50">
+                        <td class="px-4 py-3.5 text-center font-bold">${index + 1}</td>
+                        <td class="px-4 py-3.5 font-bold text-slate-900">${siswa.nama}</td>
+                        <td class="px-4 py-3.5 text-center font-extrabold text-emerald-600 text-sm">${totalHadir}</td>
+                        <td class="px-4 py-3.5 text-center font-extrabold text-sky-600 text-sm">${totalIzin}</td>
+                        <td class="px-4 py-3.5 text-center font-extrabold text-amber-600 text-sm">${totalSakit}</td>
+                        <td class="px-4 py-3.5 text-center font-extrabold text-rose-600 text-sm">${totalAlpa}</td>
+                    </tr>
+                `;
+            });
         }
+
+        // Export Excel
+        function exportExcel() {
+            if (dataSiswa.length === 0) {
+                alert("Tidak ada data rekap untuk diexport!");
+                return;
+            }
+
+            const dataExport = dataSiswa.map((siswa, index) => {
+                let h = 0, i = 0, s = 0, a = 0;
+                Object.keys(rekapAbsen).forEach(tgl => {
+                    const st = rekapAbsen[tgl][siswa.id];
+                    if (st === 'H') h++;
+                    else if (st === 'I') i++;
+                    else if (st === 'S') s++;
+                    else if (st === 'A') a++;
+                });
+
+                return {
+                    "NO": index + 1,
+                    "NAMA SISWA": siswa.nama,
+                    "HADIR (H)": h,
+                    "IZIN (I)": i,
+                    "SAKIT (S)": s,
+                    "ALPA (A)": a
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(dataExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Absensi");
+
+            XLSX.writeFile(workbook, "Laporan_Rekap_Absensi_Siswa.xlsx");
+        }
+
+        // Cetak PDF
+        function cetakPDF() {
+            window.print();
+        }
+
+        renderRekap();
     </script>
 </body>
 </html>
