@@ -4,76 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panduan Penggunaan - Administrasi Guru</title>
+    <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .glass-item {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
 
-    <!-- Header -->
-    <header class="bg-indigo-600 text-white shadow-md">
-        <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-book-open"></i> Panduan Penggunaan
-            </h1>
-            <a href="index.html" class="inline-flex items-center gap-2 bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-lg text-sm transition">
-                <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
-            </a>
-        </div>
-    </header>
+    <!-- Overlay Gelap Tipis agar Teks Terbaca -->
+    <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-    <!-- Content / Isi Panduan -->
-    <main class="max-w-4xl mx-auto px-6 py-8 flex-1 w-full">
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-900 mb-2">Panduan Penggunaan Aplikasi</h2>
-                <p class="text-slate-600">Berikut adalah tata cara dan petunjuk penggunaan fitur dalam Aplikasi Administrasi Guru.</p>
+        <!-- NAVIGATION / HEADER -->
+        <header class="p-4 md:px-8">
+            <div class="max-w-4xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
+                <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5 text-indigo-600"></i> PANDUAN PENGGUNAAN
+                </h1>
+                <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
+                </a>
             </div>
+        </header>
 
-            <hr class="border-slate-200">
-
-            <div class="space-y-4">
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <h3 class="font-bold text-indigo-600 flex items-center gap-2 text-lg mb-2">
-                        <i class="fa-solid fa-1"></i> Pengelolaan Data Siswa
-                    </h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Masuk ke menu **Siswa** untuk menambah, mengedit, atau menghapus daftar siswa. Kamu juga bisa mengelompokkan siswa berdasarkan kelas dan rombel masing-masing.
-                    </p>
+        <!-- CONTENT -->
+        <main class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
+            <div class="glass-card rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Panduan Aplikasi</h2>
+                    <p class="text-sm text-slate-600">Petunjuk penggunaan fitur-fitur di Aplikasi Administrasi Guru.</p>
                 </div>
 
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <h3 class="font-bold text-indigo-600 flex items-center gap-2 text-lg mb-2">
-                        <i class="fa-solid fa-2"></i> Presensi & Absensi Harian
-                    </h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Buka menu **Absensi** untuk mencatat kehadiran harian. Cukup pilih status (Hadir, Izin, Sakit, Alpa), lalu simpan. Data akan tersimpan secara otomatis.
-                    </p>
-                </div>
+                <hr class="border-slate-300/60">
 
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                    <h3 class="font-bold text-indigo-600 flex items-center gap-2 text-lg mb-2">
-                        <i class="fa-solid fa-3"></i> Pengaturan Identitas Guru
-                    </h3>
-                    <p class="text-sm text-slate-600 leading-relaxed">
-                        Buka menu **Pengaturan** untuk mengisi Nama Guru, NIP, serta Nama Sekolah agar tercetak otomatis pada laporan administrasi.
-                    </p>
+                <div class="space-y-3">
+                    <div class="glass-item p-4 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm mb-1">
+                            <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i> 1. Kelola Data Siswa
+                        </h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Buka menu **DATA SISWA** untuk menambah, mengedit, atau menghapus daftar murid serta membaginya ke dalam kelas.
+                        </p>
+                    </div>
+
+                    <div class="glass-item p-4 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm mb-1">
+                            <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i> 2. Presensi Harian
+                        </h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Buka menu **ABSEN HARIAN** untuk mencatat kehadiran harian murid (Hadir, Izin, Sakit, Alpa).
+                        </p>
+                    </div>
+
+                    <div class="glass-item p-4 rounded-xl shadow-sm">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm mb-1">
+                            <i data-lucide="settings" class="w-4 h-4 text-indigo-600"></i> 3. Identitas & Pengaturan
+                        </h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Gunakan menu **PENGATURAN** untuk mengisi nama guru, NIP, dan nama sekolah agar tercetak otomatis pada cetakan rapor/laporan.
+                        </p>
+                    </div>
                 </div>
             </div>
+        </main>
 
-            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg mt-6">
-                <p class="text-sm text-indigo-900 font-medium">
-                    <i class="fa-solid fa-circle-info mr-1"></i> Informasi PWA:
-                </p>
-                <p class="text-sm text-indigo-800 mt-1">
-                    Aplikasi ini bisa dipasang (install) langsung di HP atau laptop kamu melalui tombol "Add to Home Screen" di browser agar bisa diakses tanpa internet!
-                </p>
-            </div>
-        </div>
-    </main>
+        <footer class="text-center py-4 text-xs text-white/80 font-medium">
+            &copy; Aplikasi Administrasi Guru
+        </footer>
+    </div>
 
-    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-200 bg-white">
-        &copy; Aplikasi Administrasi Guru
-    </footer>
-
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
