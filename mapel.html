@@ -1,249 +1,155 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mata Pelajaran - Administrasi Digital Guru</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
-
-  <style>
-    body {
-      background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .glass-card { background: var(--glass-bg, rgba(255, 255, 255, 0.45)); backdrop-filter: blur(25px); border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.6)); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08); }
-    .glass-inner { background: var(--inner-bg, rgba(255, 255, 255, 0.5)); backdrop-filter: blur(15px); border: 1px solid var(--inner-border, rgba(255, 255, 255, 0.7)); }
-    .glass-nav { background: var(--nav-bg, rgba(255, 255, 255, 0.65)); backdrop-filter: blur(15px); border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.8)); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mata Pelajaran - Administrasi Guru</title>
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     
-    body.dark-mode { --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(255, 255, 255, 0.1); --inner-bg: rgba(30, 41, 59, 0.7); --inner-border: rgba(255, 255, 255, 0.1); --nav-bg: rgba(30, 41, 59, 0.8); --nav-border: rgba(255, 255, 255, 0.1); color: #f1f5f9; }
-    body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { color: #f8fafc; }
-    body.dark-mode .text-slate-600, body.dark-mode .text-slate-500 { color: #cbd5e1; }
-
-    body.theme-blue { --primary-color: #2563eb; }
-    body.theme-emerald { --primary-color: #059669; }
-    body.theme-purple { --primary-color: #7c3aed; }
-    body.theme-amber { --primary-color: #d97706; }
-    .theme-active-bg { background-color: var(--primary-color, #2563eb) !important; }
-    .theme-active-text { color: var(--primary-color, #2563eb) !important; }
-  </style>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+        }
+    </style>
 </head>
-<body id="appBody" class="p-3 md:p-5 min-h-screen text-slate-800 theme-blue">
+<body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
 
-  <!-- HEADER -->
-  <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex items-center gap-4">
-      <div class="relative group cursor-pointer" onclick="document.getElementById('uploadFoto').click()">
-        <img id="fotoProfil" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
-        <input type="file" id="uploadFoto" accept="image/*" class="hidden" onchange="gantiFoto(event)">
-      </div>
-      <div>
-        <h1 class="text-2xl font-black theme-active-text tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 mt-1">
-          <span id="txtSekolah">SD NEGERI 1 GUWA LOR</span> • <span id="txtGuru">CHAIRUL ANWAR, S.Pd</span> • <span class="italic text-slate-500">"BERGELORA"</span>
-        </div>
-        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
-          <span id="realtimeClock" class="theme-active-text font-mono font-bold">🕒 00:00:00</span>
-          <span id="realtimeDate">...</span>
-          <span class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Sem. Ganjil • 2026/2027</span>
-        </div>
-      </div>
-    </div>
-    <div class="flex items-center gap-2">
-      <div class="relative group">
-        <button title="Pilih Tema Warna" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="palette" class="w-4 h-4"></i></button>
-        <div class="absolute right-0 mt-1 hidden group-hover:flex bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-xl border border-slate-200 gap-2 z-50">
-          <button onclick="setThemeColor('blue')" class="w-6 h-6 rounded-full bg-blue-600 border border-white"></button>
-          <button onclick="setThemeColor('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 border border-white"></button>
-          <button onclick="setThemeColor('purple')" class="w-6 h-6 rounded-full bg-purple-600 border border-white"></button>
-          <button onclick="setThemeColor('amber')" class="w-6 h-6 rounded-full bg-amber-600 border border-white"></button>
-        </div>
-      </div>
-      <div class="bg-white/80 px-2 py-1 rounded-xl flex items-center gap-1 border border-slate-200">
-        <span class="text-xs" id="modeIcon">☀️</span>
-        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" class="toggle accent-blue-600 cursor-pointer">
-      </div>
-    </div>
-  </header>
+    <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-  <!-- NAVIGASI -->
-  <nav class="flex items-center gap-2 overflow-x-auto pb-2 mb-4">
-    <a href="index.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> DASHBOARD</a>
-    <a href="absensi.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="calendar" class="w-4 h-4"></i> ABSEN HARIAN</a>
-    <a href="profile.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="user" class="w-4 h-4"></i> PROFILE</a>
-    <a href="mapel.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl theme-active-bg text-white font-bold text-xs shadow-md"><i data-lucide="book-open" class="w-4 h-4"></i> MAPEL</a>
-    <a href="siswa.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="users" class="w-4 h-4"></i> DATA SISWA</a>
-    <a href="nilai.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="star" class="w-4 h-4"></i> NILAI SISWA</a>
-    <a href="rekap.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="clipboard-list" class="w-4 h-4"></i> REKAP ABSEN</a>
-    <a href="rapor.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i> CETAK</a>
-    <a href="modul.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="folder" class="w-4 h-4"></i> RPP / MODUL</a>
-  </nav>
-
-  <!-- CONTENT -->
-  <main class="glass-card rounded-3xl p-6 space-y-6">
-    <div class="flex items-center justify-between border-b border-slate-200/50 pb-4">
-      <div>
-        <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide flex items-center gap-2">
-          <i data-lucide="book-open" class="w-6 h-6 theme-active-text"></i> Mata Pelajaran
-        </h2>
-        <p class="text-xs font-semibold text-slate-500 mt-0.5">Kelola daftar mata pelajaran dan Alokasi Jam (JP).</p>
-      </div>
-      <button onclick="bukaModalMapel()" class="theme-active-bg text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-md hover:opacity-90 transition flex items-center gap-2 z-10 cursor-pointer">
-        <i data-lucide="plus-circle" class="w-4 h-4"></i> + Tambah Mapel
-      </button>
-    </div>
-
-    <!-- LIST MATA PELAJARAN -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="mapelList">
-      <!-- Data dari Javascript -->
-    </div>
-  </main>
-
-  <!-- MODAL FORM TAMBAH MAPEL -->
-  <div id="modalMapel" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="glass-card bg-white/90 rounded-3xl p-6 max-w-md w-full space-y-4 border border-white shadow-2xl">
-      <div class="flex items-center justify-between border-b pb-3">
-        <h3 class="font-black text-base theme-active-text flex items-center gap-2">
-          <i data-lucide="book-plus" class="w-5 h-5"></i> Tambah Mata Pelajaran
-        </h3>
-        <button onclick="tutupModalMapel()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-      </div>
-
-      <form onsubmit="simpanMapelBaru(event)" class="space-y-4">
-        <div>
-          <label class="text-xs font-bold text-slate-700">Nama Mata Pelajaran</label>
-          <input type="text" id="inpNamaMapel" placeholder="Contoh: IPA / Bahasa Indonesia" required class="w-full p-2.5 mt-1 rounded-xl bg-white border border-slate-300 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-xs font-bold text-slate-700">KKM</label>
-            <input type="number" id="inpKKM" value="70" required class="w-full p-2.5 mt-1 rounded-xl bg-white border border-slate-300 text-xs font-semibold outline-none">
-          </div>
-          <div>
-            <label class="text-xs font-bold text-slate-700">Beban Jam (JP)</label>
-            <input type="number" id="inpJP" value="3" required class="w-full p-2.5 mt-1 rounded-xl bg-white border border-slate-300 text-xs font-semibold outline-none">
-          </div>
-        </div>
-
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="tutupModalMapel()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 text-xs font-bold">Batal</button>
-          <button type="submit" class="px-5 py-2 rounded-xl theme-active-bg text-white text-xs font-bold shadow">Simpan Mapel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    // Dexie DB Setup
-    const db = new Dexie('AdminGuruDB');
-    db.version(1).stores({
-      mapel: '++id, nama, kkm, jp'
-    });
-
-    const defaultMapel = [
-      { nama: 'Matematika', kkm: 75, jp: 4 },
-      { nama: 'Seni Budaya & Budi Pekerti', kkm: 70, jp: 3 }
-    ];
-
-    function startClock() {
-      setInterval(() => {
-        const now = new Date();
-        document.getElementById('realtimeClock').innerText = '🕒 ' + now.toLocaleTimeString('id-ID');
-        document.getElementById('realtimeDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      }, 1000);
-    }
-
-    function setThemeColor(c) {
-      document.getElementById('appBody').className = `p-3 md:p-5 min-h-screen text-slate-800 theme-${c}` + (document.getElementById('darkModeToggle').checked ? ' dark-mode' : '');
-      localStorage.setItem('prefThemeColor', c);
-    }
-
-    function toggleDarkMode(d) {
-      document.getElementById('appBody').classList.toggle('dark-mode', d);
-      document.getElementById('modeIcon').innerText = d ? '🌙' : '☀️';
-      localStorage.setItem('prefDarkMode', d);
-    }
-
-    function gantiFoto(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          document.getElementById('fotoProfil').src = ev.target.result;
-          localStorage.setItem('fotoGuruURL', ev.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    async function loadMapel() {
-      let list = await db.mapel.toArray();
-      if(list.length === 0) {
-        await db.mapel.bulkAdd(defaultMapel);
-        list = await db.mapel.toArray();
-      }
-
-      const container = document.getElementById('mapelList');
-      container.innerHTML = '';
-
-      list.forEach(m => {
-        container.innerHTML += `
-          <div class="glass-inner p-4 rounded-2xl flex items-center justify-between group hover:shadow-md transition">
-            <div>
-              <h3 class="font-bold text-sm text-slate-800">${m.nama}</h3>
-              <p class="text-[10px] text-slate-500 font-semibold mt-0.5">KKM: ${m.kkm} • Beban: ${m.jp} JP</p>
+        <!-- HEADER / NAVBAR -->
+        <header class="p-4 md:px-8">
+            <div class="max-w-5xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
+                <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5 text-indigo-600"></i> KELOLA MATA PELAJARAN
+                </h1>
+                <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
+                </a>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="bg-emerald-500/20 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-lg">Wajib</span>
-              <button onclick="hapusMapel(${m.id})" title="Hapus Mapel" class="text-red-400 hover:text-red-600 p-1 opacity-60 hover:opacity-100 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+        </header>
+
+        <!-- CONTENT UTAMA -->
+        <main class="max-w-5xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
+            
+            <!-- FORM INPUT MAPEL BARU -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-600"></i> Tambah Mata Pelajaran
+                </h2>
+                <form id="formMapel" onsubmit="tambahMapel(event)" class="flex flex-col md:flex-row gap-3">
+                    <input type="text" id="namaMapel" placeholder="Masukkan Nama Mata Pelajaran (misal: Matematika)" required class="flex-1 px-4 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                    <input type="text" id="kkmMapel" placeholder="KKM (misal: 75)" required class="w-full md:w-32 px-4 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold text-center">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> SIMPAN MAPEL
+                    </button>
+                </form>
             </div>
-          </div>
-        `;
-      });
-      lucide.createIcons();
-    }
 
-    function bukaModalMapel() {
-      document.getElementById('modalMapel').classList.remove('hidden');
-    }
+            <!-- TABEL DAFTAR MAPEL -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-bold text-slate-800">Daftar Mata Pelajaran</h2>
+                    <span id="totalMapel" class="text-xs font-bold bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">0 Mapel</span>
+                </div>
 
-    function tutupModalMapel() {
-      document.getElementById('modalMapel').classList.add('hidden');
-    }
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-xs text-left text-slate-700 bg-white/70">
+                        <thead class="text-xs text-slate-800 uppercase bg-slate-200/80 border-b border-slate-300">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-center w-12">No</th>
+                                <th scope="col" class="px-4 py-3">Mata Pelajaran</th>
+                                <th scope="col" class="px-4 py-3 text-center w-24">KKM</th>
+                                <th scope="col" class="px-4 py-3 text-center w-20">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelMapelBody" class="divide-y divide-slate-200">
+                            <!-- Data otomatis diisi via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    async function simpanMapelBaru(e) {
-      e.preventDefault();
-      const nama = document.getElementById('inpNamaMapel').value;
-      const kkm = parseInt(document.getElementById('inpKKM').value);
-      const jp = parseInt(document.getElementById('inpJP').value);
+        </main>
 
-      await db.mapel.add({ nama, kkm, jp });
-      document.getElementById('inpNamaMapel').value = '';
-      tutupModalMapel();
-      loadMapel();
-    }
+        <footer class="text-center py-4 text-xs text-white/80 font-medium">
+            &copy; Aplikasi Administrasi Guru
+        </footer>
+    </div>
 
-    async function hapusMapel(id) {
-      if(confirm('Yakin ingin menghapus mata pelajaran ini?')) {
-        await db.mapel.delete(id);
-        loadMapel();
-      }
-    }
+    <!-- SCRIPT LOGIKA LOCALSTORAGE -->
+    <script>
+        lucide.createIcons();
 
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons(); startClock();
-      if(localStorage.getItem('txtGuru')) document.getElementById('txtGuru').innerText = localStorage.getItem('txtGuru');
-      if(localStorage.getItem('txtSekolah')) document.getElementById('txtSekolah').innerText = localStorage.getItem('txtSekolah');
-      if(localStorage.getItem('fotoGuruURL')) document.getElementById('fotoProfil').src = localStorage.getItem('fotoGuruURL');
+        // 1. Ambil data Mapel dari LocalStorage
+        let daftarMapel = JSON.parse(localStorage.getItem('dataMapelGuru')) || [
+            { id: 1, nama: "Pendidikan Agama", kkm: "75" },
+            { id: 2, nama: "Pancasila & KWN", kkm: "75" },
+            { id: 3, nama: "Bahasa Indonesia", kkm: "70" },
+            { id: 4, nama: "Matematika", kkm: "70" }
+        ];
 
-      const savedTheme = localStorage.getItem('prefThemeColor'); if(savedTheme) setThemeColor(savedTheme);
-      const savedDark = localStorage.getItem('prefDarkMode') === 'true'; if(savedDark) { document.getElementById('darkModeToggle').checked = true; toggleDarkMode(true); }
+        // 2. Render Data ke Tabel
+        function renderTabel() {
+            const tbody = document.getElementById('tabelMapelBody');
+            tbody.innerHTML = '';
 
-      loadMapel();
-    });
-  </script>
+            if (daftarMapel.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-500">Belum ada mata pelajaran. Silahkan tambah di atas.</td></tr>`;
+            } else {
+                daftarMapel.forEach((mapel, index) => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-100/50">
+                            <td class="px-4 py-3 text-center font-bold">${index + 1}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-900">${mapel.nama}</td>
+                            <td class="px-4 py-3 text-center font-bold text-indigo-600">${mapel.kkm}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="hapusMapel(${index})" class="bg-rose-500 hover:bg-rose-600 text-white p-1.5 rounded-lg transition" title="Hapus">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.getElementById('totalMapel').innerText = `${daftarMapel.length} Mapel`;
+            localStorage.setItem('dataMapelGuru', JSON.stringify(daftarMapel));
+            lucide.createIcons();
+        }
+
+        // 3. Tambah Mapel
+        function tambahMapel(event) {
+            event.preventDefault();
+            const nama = document.getElementById('namaMapel').value.trim();
+            const kkm = document.getElementById('kkmMapel').value.trim();
+
+            if (nama && kkm) {
+                daftarMapel.push({ id: Date.now(), nama: nama, kkm: kkm });
+                document.getElementById('namaMapel').value = '';
+                document.getElementById('kkmMapel').value = '';
+                renderTabel();
+            }
+        }
+
+        // 4. Hapus Mapel
+        function hapusMapel(index) {
+            if (confirm("Yakin ingin menghapus mata pelajaran ini?")) {
+                daftarMapel.splice(index, 1);
+                renderTabel();
+            }
+        }
+
+        // Jalankan saat dimuat
+        renderTabel();
+    </script>
 </body>
 </html>
