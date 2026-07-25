@@ -1,252 +1,219 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cetak Rapor & Leger - Administrasi Digital Guru</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-  <style>
-    body {
-      background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .glass-card { background: var(--glass-bg, rgba(255, 255, 255, 0.45)); backdrop-filter: blur(25px); border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.6)); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08); }
-    .glass-inner { background: var(--inner-bg, rgba(255, 255, 255, 0.5)); backdrop-filter: blur(15px); border: 1px solid var(--inner-border, rgba(255, 255, 255, 0.7)); }
-    .glass-nav { background: var(--nav-bg, rgba(255, 255, 255, 0.65)); backdrop-filter: blur(15px); border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.8)); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak Rapor - Administrasi Guru</title>
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     
-    body.dark-mode { --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(255, 255, 255, 0.1); --inner-bg: rgba(30, 41, 59, 0.7); --inner-border: rgba(255, 255, 255, 0.1); --nav-bg: rgba(30, 41, 59, 0.8); --nav-border: rgba(255, 255, 255, 0.1); color: #f1f5f9; }
-    body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { color: #f8fafc; }
-    body.dark-mode .text-slate-600, body.dark-mode .text-slate-500 { color: #cbd5e1; }
-    body.dark-mode input, body.dark-mode select { background-color: rgba(15, 23, 42, 0.8); color: white; border-color: rgba(255,255,255,0.2); }
-
-    body.theme-blue { --primary-color: #2563eb; }
-    body.theme-emerald { --primary-color: #059669; }
-    body.theme-purple { --primary-color: #7c3aed; }
-    body.theme-amber { --primary-color: #d97706; }
-    .theme-active-bg { background-color: var(--primary-color, #2563eb) !important; }
-    .theme-active-text { color: var(--primary-color, #2563eb) !important; }
-
-    /* CSS Khusus Cetak Print PDF */
-    @media print {
-      body { background: #fff !important; color: #000 !important; }
-      header, nav, .no-print { display: none !important; }
-      .glass-card, .glass-inner { background: none !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; }
-      table { border-collapse: collapse !important; width: 100% !important; }
-      th, td { border: 1px solid #000 !important; padding: 6px !important; color: #000 !important; }
-    }
-  </style>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+        }
+        /* Format Cetak Kertas A4 & Sembunyikan Elemen Non-Cetak */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .glass-card {
+                background: white !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            .print-border {
+                border: 1px solid #000 !important;
+            }
+        }
+    </style>
 </head>
-<body id="appBody" class="p-3 md:p-5 min-h-screen text-slate-800 theme-blue">
+<body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
 
-  <!-- HEADER -->
-  <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex items-center gap-4">
-      <div class="relative group cursor-pointer" onclick="document.getElementById('uploadFoto').click()">
-        <img id="fotoProfil" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
-        <input type="file" id="uploadFoto" accept="image/*" class="hidden" onchange="gantiFoto(event)">
-      </div>
-      <div>
-        <h1 class="text-2xl font-black theme-active-text tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 mt-1">
-          <span id="txtSekolah">SD NEGERI 1 GUWA LOR</span> • <span id="txtGuru">CHAIRUL ANWAR, S.Pd</span> • <span class="italic text-slate-500">"BERGELORA"</span>
-        </div>
-        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
-          <span id="realtimeClock" class="theme-active-text font-mono font-bold">🕒 00:00:00</span>
-          <span id="realtimeDate">...</span>
-          <span class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Sem. Ganjil • 2026/2027</span>
-        </div>
-      </div>
+    <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
+
+        <!-- HEADER / NAVBAR (Sembunyi saat cetak) -->
+        <header class="p-4 md:px-8 no-print">
+            <div class="max-w-4xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
+                <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="printer" class="w-5 h-5 text-indigo-600"></i> CETAK RAPOR SISWA
+                </h1>
+                <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
+                </a>
+            </div>
+        </header>
+
+        <!-- CONTENT UTAMA -->
+        <main class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
+            
+            <!-- PANEL PILIH SISWA & TOMBOL CETAK (Sembunyi saat cetak) -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <label class="text-xs font-bold text-slate-700 whitespace-nowrap">Pilih Siswa:</label>
+                    <select id="pilihSiswa" onchange="muatRapor()" class="px-4 py-2 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-bold text-slate-800 w-full md:w-64">
+                        <!-- Otomatis diisi lewat JS -->
+                    </select>
+                </div>
+                <button onclick="window.print()" class="w-full md:w-auto bg-rose-600 hover:bg-rose-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                    <i data-lucide="printer" class="w-4 h-4"></i> CETAK / SIMPAN PDF
+                </button>
+            </div>
+
+            <!-- LEMBAR RAPOR (SIAP CETAK) -->
+            <div class="glass-card rounded-2xl p-8 shadow-xl bg-white space-y-6">
+                
+                <!-- KOP RAPOR -->
+                <div class="text-center border-b-2 border-slate-800 pb-4">
+                    <h2 class="text-xl font-extrabold uppercase tracking-wide text-slate-900">LAPORAN HASIL BELAJAR SISWA</h2>
+                    <p class="text-xs font-semibold text-slate-600 mt-1">SEKOLAH DASAR / MADRASAH IBTIDAIYAH</p>
+                </div>
+
+                <!-- BIODATA SISWA -->
+                <div class="grid grid-cols-2 gap-4 text-xs font-semibold text-slate-800">
+                    <div>
+                        <p class="mb-1"><span class="text-slate-500 inline-block w-28">Nama Siswa</span>: <span id="raporNama" class="font-bold text-slate-900">Ahmad Fauzi</span></p>
+                        <p><span class="text-slate-500 inline-block w-28">Jenis Kelamin</span>: <span id="raporJK">Laki-Laki</span></p>
+                    </div>
+                    <div>
+                        <p class="mb-1"><span class="text-slate-500 inline-block w-28">Tahun Ajaran</span>: <span>2025/2026</span></p>
+                        <p><span class="text-slate-500 inline-block w-28">Semester</span>: <span>1 (Ganjil)</span></p>
+                    </div>
+                </div>
+
+                <!-- TABEL NILAI MATAPELAJARAN -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-800 uppercase mb-2">A. Capaian Nilai Akademik</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border border-slate-300">
+                            <thead class="bg-slate-100 text-slate-800 uppercase border-b border-slate-300">
+                                <tr>
+                                    <th class="px-3 py-2 border-r border-slate-300 text-center w-10">No</th>
+                                    <th class="px-3 py-2 border-r border-slate-300">Mata Pelajaran</th>
+                                    <th class="px-3 py-2 border-r border-slate-300 text-center w-20">Nilai</th>
+                                    <th class="px-3 py-2 border-r border-slate-300 text-center w-20">Predikat</th>
+                                    <th class="px-3 py-2">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-300 text-slate-800">
+                                <tr>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center">1</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 font-medium">Pendidikan Agama</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold">88</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold text-emerald-700">A</td>
+                                    <td class="px-3 py-2">Sangat Baik dalam memahami materi.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center">2</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 font-medium">Pancasila & Kewarganegaraan</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold">85</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold text-indigo-700">B</td>
+                                    <td class="px-3 py-2">Baik dalam menerapkan nilai Pancasila.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center">3</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 font-medium">Bahasa Indonesia</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold">90</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold text-emerald-700">A</td>
+                                    <td class="px-3 py-2">Sangat Baik dalam membaca dan menulis.</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center">4</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 font-medium">Matematika</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold">78</td>
+                                    <td class="px-3 py-2 border-r border-slate-300 text-center font-bold text-indigo-700">B</td>
+                                    <td class="px-3 py-2">Cukup Baik, perlu latihan berhitung lanjutan.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TABEL KEHADIRAN / ABSENSI -->
+                <div class="w-1/2">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase mb-2">B. Ketidakhadiran</h3>
+                    <table class="w-full text-xs text-left border border-slate-300">
+                        <tr class="border-b border-slate-300">
+                            <td class="px-3 py-1.5 border-r border-slate-300 font-medium">Sakit</td>
+                            <td class="px-3 py-1.5 font-bold text-center">0 Hari</td>
+                        </tr>
+                        <tr class="border-b border-slate-300">
+                            <td class="px-3 py-1.5 border-r border-slate-300 font-medium">Izin</td>
+                            <td class="px-3 py-1.5 font-bold text-center">1 Hari</td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-1.5 border-r border-slate-300 font-medium">Tanpa Keterangan (Alpa)</td>
+                            <td class="px-3 py-1.5 font-bold text-center">0 Hari</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- TANDA TANGAN GURU & ORANG TUA -->
+                <div class="pt-8 grid grid-cols-2 text-center text-xs font-semibold text-slate-800">
+                    <div>
+                        <p class="mb-16">Mengetahui,<br>Orang Tua / Wali Murid</p>
+                        <p class="font-bold underline">( .................................... )</p>
+                    </div>
+                    <div>
+                        <p class="mb-16">Guru Kelas / Wali Kelas</p>
+                        <p class="font-bold underline">( Budi Santoso, S.Pd. )</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer class="text-center py-4 text-xs text-white/80 font-medium no-print">
+            &copy; Aplikasi Administrasi Guru
+        </footer>
     </div>
-    <div class="flex items-center gap-2">
-      <div class="relative group">
-        <button title="Pilih Tema Warna" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="palette" class="w-4 h-4"></i></button>
-        <div class="absolute right-0 mt-1 hidden group-hover:flex bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-xl border border-slate-200 gap-2 z-50">
-          <button onclick="setThemeColor('blue')" class="w-6 h-6 rounded-full bg-blue-600 border border-white"></button>
-          <button onclick="setThemeColor('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 border border-white"></button>
-          <button onclick="setThemeColor('purple')" class="w-6 h-6 rounded-full bg-purple-600 border border-white"></button>
-          <button onclick="setThemeColor('amber')" class="w-6 h-6 rounded-full bg-amber-600 border border-white"></button>
-        </div>
-      </div>
-      <div class="bg-white/80 px-2 py-1 rounded-xl flex items-center gap-1 border border-slate-200">
-        <span class="text-xs" id="modeIcon">☀️</span>
-        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" class="toggle accent-blue-600 cursor-pointer">
-      </div>
-    </div>
-  </header>
 
-  <!-- NAVIGASI TAB HORIZONTAL -->
-  <nav class="flex items-center gap-2 overflow-x-auto pb-2 mb-4">
-    <a href="index.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> DASHBOARD</a>
-    <a href="absensi.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="calendar" class="w-4 h-4"></i> ABSEN HARIAN</a>
-    <a href="profile.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="user" class="w-4 h-4"></i> PROFILE</a>
-    <a href="mapel.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="book-open" class="w-4 h-4"></i> MAPEL</a>
-    <a href="siswa.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="users" class="w-4 h-4"></i> DATA SISWA</a>
-    <a href="nilai.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="star" class="w-4 h-4"></i> NILAI SISWA</a>
-    <a href="rekap.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="clipboard-list" class="w-4 h-4"></i> REKAP ABSEN</a>
-    <a href="rapor.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl theme-active-bg text-white font-bold text-xs shadow-md"><i data-lucide="printer" class="w-4 h-4"></i> CETAK</a>
-    <a href="modul.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="folder" class="w-4 h-4"></i> RPP / MODUL</a>
-  </nav>
+    <!-- SCRIPT LOGIKA CETAK RAPOR -->
+    <script>
+        lucide.createIcons();
 
-  <!-- KONTEN UTAMA CETAK LEGER -->
-  <main class="glass-card rounded-3xl p-6 space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/50 pb-4 no-print">
-      <div>
-        <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide flex items-center gap-2">
-          <i data-lucide="file-text" class="w-6 h-6 theme-active-text"></i> Leger Nilai & Rapor Siswa
-        </h2>
-        <p class="text-xs font-semibold text-slate-500 mt-0.5">Rekapitulasi nilai rata-rata seluruh mata pelajaran.</p>
-      </div>
+        // Ambil data siswa dari LocalStorage
+        const daftarSiswa = JSON.parse(localStorage.getItem('dataSiswaGuru')) || [
+            { id: 1, nama: "Ahmad Fauzi", jk: "L" },
+            { id: 2, nama: "Biti Anisa", jk: "P" },
+            { id: 3, nama: "Citra Lestari", jk: "P" }
+        ];
 
-      <div class="flex items-center gap-3">
-        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5">
-          <i data-lucide="printer" class="w-4 h-4"></i> Cetak Leger
-        </button>
-        <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow transition flex items-center gap-1.5">
-          <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export Excel
-        </button>
-      </div>
-    </div>
-
-    <!-- TABEL LEGER NILAI -->
-    <div class="overflow-x-auto">
-      <table class="w-full text-left" id="tabelLegerExport">
-        <thead>
-          <tr id="headerMapel" class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200/60">
-            <th class="py-3 px-4 w-12 text-center">NO</th>
-            <th class="py-3 px-4">NISN</th>
-            <th class="py-3 px-4">NAMA SISWA</th>
-            <!-- Mapel Header di-render via JS -->
-            <th class="py-3 px-4 text-center font-black theme-active-text">RATA2</th>
-          </tr>
-        </thead>
-        <tbody id="tabelLeger" class="divide-y divide-slate-200/50 text-xs font-medium">
-          <!-- Render via JS -->
-        </tbody>
-      </table>
-    </div>
-  </main>
-
-  <script>
-    const db = new Dexie('AdminGuruDB');
-    db.version(1).stores({
-      siswa: '++id, nisn, nama, gender, jk',
-      mapel: '++id, nama, kkm, jp',
-      nilai: '++id, siswaId, mapelId, t1, t2, pts, pas'
-    });
-
-    function startClock() {
-      setInterval(() => {
-        const now = new Date();
-        document.getElementById('realtimeClock').innerText = '🕒 ' + now.toLocaleTimeString('id-ID');
-        document.getElementById('realtimeDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      }, 1000);
-    }
-
-    function setThemeColor(c) {
-      document.getElementById('appBody').className = `p-3 md:p-5 min-h-screen text-slate-800 theme-${c}` + (document.getElementById('darkModeToggle').checked ? ' dark-mode' : '');
-      localStorage.setItem('prefThemeColor', c);
-    }
-
-    function toggleDarkMode(d) {
-      document.getElementById('appBody').classList.toggle('dark-mode', d);
-      document.getElementById('modeIcon').innerText = d ? '🌙' : '☀️';
-      localStorage.setItem('prefDarkMode', d);
-    }
-
-    function gantiFoto(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          document.getElementById('fotoProfil').src = ev.target.result;
-          localStorage.setItem('fotoGuruURL', ev.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    async function loadLeger() {
-      const siswaList = await db.siswa.toArray();
-      const mapelList = await db.mapel.toArray();
-      const nilaiList = await db.nilai.toArray();
-
-      // Render Mapel Headers
-      const headerRow = document.getElementById('headerMapel');
-      headerRow.innerHTML = `
-        <th class="py-3 px-4 w-12 text-center">NO</th>
-        <th class="py-3 px-4">NISN</th>
-        <th class="py-3 px-4">NAMA SISWA</th>
-      `;
-      
-      mapelList.forEach(m => {
-        headerRow.innerHTML += `<th class="py-3 px-3 text-center uppercase">${m.nama}</th>`;
-      });
-      headerRow.innerHTML += `<th class="py-3 px-4 text-center font-black theme-active-text">RATA2</th>`;
-
-      // Render Body
-      const tbody = document.getElementById('tabelLeger');
-      tbody.innerHTML = '';
-
-      if (siswaList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${4 + mapelList.length}" class="text-center py-6 text-slate-500 font-bold">Belum ada data siswa.</td></tr>`;
-        return;
-      }
-
-      siswaList.forEach((s, idx) => {
-        let mapelTd = '';
-        let totalNilaiSiswa = 0;
-        let countMapel = 0;
-
-        mapelList.forEach(m => {
-          const n = nilaiList.find(x => x.siswaId === s.id && x.mapelId === m.id);
-          if (n) {
-            const rataMapel = Math.round((Number(n.t1) + Number(n.t2) + Number(n.pts) + Number(n.pas)) / 4);
-            mapelTd += `<td class="py-3 px-3 text-center font-bold text-slate-700">${rataMapel}</td>`;
-            totalNilaiSiswa += rataMapel;
-            countMapel++;
-          } else {
-            mapelTd += `<td class="py-3 px-3 text-center text-slate-400">-</td>`;
-          }
+        // Isi Dropdown Opsi Siswa
+        const selectSiswa = document.getElementById('pilihSiswa');
+        daftarSiswa.forEach((siswa, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.text = siswa.nama;
+            selectSiswa.appendChild(option);
         });
 
-        const rataTotal = countMapel > 0 ? (totalNilaiSiswa / countMapel).toFixed(1) : '0.0';
+        // Fungsi Ganti Siswa di Rapor
+        function muatRapor() {
+            const selectedIndex = selectSiswa.value;
+            const siswa = daftarSiswa[selectedIndex];
+            
+            if (siswa) {
+                document.getElementById('raporNama').innerText = siswa.nama;
+                document.getElementById('raporJK').innerText = siswa.jk === 'L' ? 'Laki-Laki' : 'Perempuan';
+            }
+        }
 
-        tbody.innerHTML += `
-          <tr class="hover:bg-white/40 transition">
-            <td class="py-3 px-4 text-center font-bold text-slate-500">${idx + 1}</td>
-            <td class="py-3 px-4 font-mono font-bold theme-active-text">${s.nisn || '-'}</td>
-            <td class="py-3 px-4 font-bold text-slate-800 uppercase">${s.nama}</td>
-            ${mapelTd}
-            <td class="py-3 px-4 text-center font-black text-sm theme-active-text">${rataTotal}</td>
-          </tr>
-        `;
-      });
-      lucide.createIcons();
-    }
-
-    function exportExcel() {
-      const table = document.getElementById('tabelLegerExport');
-      const wb = XLSX.utils.table_to_book(table, { sheet: "Leger Rapor" });
-      XLSX.writeFile(wb, `Leger_Rapor_Nilai.xlsx`);
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons(); startClock();
-      if(localStorage.getItem('txtGuru')) document.getElementById('txtGuru').innerText = localStorage.getItem('txtGuru');
-      if(localStorage.getItem('txtSekolah')) document.getElementById('txtSekolah').innerText = localStorage.getItem('txtSekolah');
-      if(localStorage.getItem('fotoGuruURL')) document.getElementById('fotoProfil').src = localStorage.getItem('fotoGuruURL');
-
-      const savedTheme = localStorage.getItem('prefThemeColor'); if(savedTheme) setThemeColor(savedTheme);
-      const savedDark = localStorage.getItem('prefDarkMode') === 'true'; if(savedDark) { document.getElementById('darkModeToggle').checked = true; toggleDarkMode(true); }
-
-      loadLeger();
-    });
-  </script>
+        // Jalankan saat pertama kali dibuka
+        muatRapor();
+    </script>
 </body>
 </html>
