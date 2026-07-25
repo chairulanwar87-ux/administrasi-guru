@@ -3,21 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Guru - Administrasi Guru</title>
-    <!-- Tailwind CSS & Lucide Icons -->
+    <title>Profil Sekolah & Guru - Administrasi Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <style>
         .glass-card {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-        .glass-input {
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(203, 213, 225, 0.8);
         }
     </style>
 </head>
@@ -25,11 +18,11 @@
 
     <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-        <!-- HEADER / NAVBAR -->
+        <!-- HEADER -->
         <header class="p-4 md:px-8">
-            <div class="max-w-4xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
+            <div class="max-w-3xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
                 <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="user" class="w-5 h-5 text-indigo-600"></i> PROFIL GURU & KELAS
+                    <i data-lucide="user-check" class="w-5 h-5 text-indigo-600"></i> PROFIL SEKOLAH & GURU
                 </h1>
                 <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
@@ -37,94 +30,101 @@
             </div>
         </header>
 
-        <!-- CONTENT UTAMA -->
-        <main class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
-            
-            <div class="glass-card rounded-2xl p-6 md:p-8 shadow-xl">
-                <!-- HEADER CARD -->
-                <div class="flex items-center gap-4 mb-6 border-b border-slate-300/60 pb-4">
-                    <div class="w-16 h-16 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl shadow-md">
-                        <i data-lucide="user-check" class="w-8 h-8"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-extrabold text-slate-800">Biodata Pengampu</h2>
-                        <p class="text-xs text-slate-600">Informasi ini akan ditampilkan pada lembar laporan dan cetak rapor.</p>
-                    </div>
+        <!-- MAIN FORM -->
+        <main class="max-w-3xl mx-auto px-4 md:px-8 py-4 flex-1 w-full">
+            <div class="glass-card rounded-2xl p-6 shadow-xl space-y-6">
+                
+                <div class="border-b border-slate-200 pb-3">
+                    <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="school" class="w-5 h-5 text-indigo-600"></i> Informasi Sekolah & Kelas
+                    </h2>
+                    <p class="text-xs text-slate-500">Data ini akan otomatis tampil di Kop Rapor dan Absensi.</p>
                 </div>
 
-                <!-- FORM PROFIL -->
-                <form id="formProfil" onsubmit="simpanProfil(event)" class="space-y-4">
-                    <div class="grid md:grid-cols-2 gap-4">
+                <form id="formProfil" onsubmit="simpanProfil(event)" class="space-y-4 text-xs">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Nama Sekolah / Instansi:</label>
+                        <input type="text" id="namaSekolah" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-800" placeholder="Contoh: SD NEGERI 1 GUWA LOR">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Guru & Gelar</label>
-                            <input type="text" id="namaGuru" placeholder="Contoh: Budi Santoso, S.Pd." required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                            <label class="block font-bold text-slate-700 mb-1">Tahun Ajaran:</label>
+                            <input type="text" id="tahunAjaran" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" placeholder="Contoh: 2025/2026">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">NIP / NUPTK</label>
-                            <input type="text" id="nipGuru" placeholder="Contoh: 19850101 201001 1 001" required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                            <label class="block font-bold text-slate-700 mb-1">Semester:</label>
+                            <select id="semester" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
+                                <option value="1 (Ganjil)">1 (Ganjil)</option>
+                                <option value="2 (Genap)">2 (Genap)</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-4">
+                    <div class="border-t border-slate-200 pt-4 mt-4">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2 mb-3">
+                            <i data-lucide="user" class="w-5 h-5 text-indigo-600"></i> Informasi Guru / Wali Kelas
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan / Kelas Pengampu</label>
-                            <input type="text" id="kelasGuru" placeholder="Contoh: Wali Kelas IV-A" required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                            <label class="block font-bold text-slate-700 mb-1">Nama Guru / Wali Kelas:</label>
+                            <input type="text" id="namaGuru" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" placeholder="Contoh: Budi Santoso, S.Pd.">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Instansi / Sekolah</label>
-                            <input type="text" id="sekolahGuru" placeholder="Contoh: SDN 1 Merdeka" required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                            <label class="block font-bold text-slate-700 mb-1">NIP Guru (Opsional):</label>
+                            <input type="text" id="nipGuru" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold" placeholder="Contoh: 19850101 201001 1 001">
                         </div>
                     </div>
 
-                    <div class="pt-2 flex justify-end">
+                    <div class="pt-4 flex justify-end">
                         <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md flex items-center gap-2">
-                            <i data-lucide="save" class="w-4 h-4"></i> SIMPAN PROFIL
+                            <i data-lucide="save" class="w-4 h-4"></i> Simpan Profil
                         </button>
                     </div>
                 </form>
+
             </div>
-
         </main>
-
-        <footer class="text-center py-4 text-xs text-white/80 font-medium">
-            &copy; Aplikasi Administrasi Guru
-        </footer>
     </div>
 
-    <!-- SCRIPT LOGIKA LOCALSTORAGE -->
     <script>
         lucide.createIcons();
 
-        // 1. Muat profil tersimpan saat halaman dibuka
+        // 1. Muat data saat halaman dibuka
         function muatProfil() {
-            const profil = JSON.parse(localStorage.getItem('profilGuru')) || {
-                nama: "Budi Santoso, S.Pd.",
-                nip: "19850101 201001 1 001",
-                kelas: "Wali Kelas IV-A",
-                sekolah: "SDN 1 Merdeka"
+            const profil = JSON.parse(localStorage.getItem('profilSekolahGuru')) || {
+                namaSekolah: "SD NEGERI 1 GUWA LOR",
+                tahunAjaran: "2025/2026",
+                semester: "1 (Ganjil)",
+                namaGuru: "Budi Santoso, S.Pd.",
+                nipGuru: "-"
             };
 
-            document.getElementById('namaGuru').value = profil.nama;
-            document.getElementById('nipGuru').value = profil.nip;
-            document.getElementById('kelasGuru').value = profil.kelas;
-            document.getElementById('sekolahGuru').value = profil.sekolah;
+            document.getElementById('namaSekolah').value = profil.namaSekolah;
+            document.getElementById('tahunAjaran').value = profil.tahunAjaran;
+            document.getElementById('semester').value = profil.semester;
+            document.getElementById('namaGuru').value = profil.namaGuru;
+            document.getElementById('nipGuru').value = profil.nipGuru || "";
         }
 
-        // 2. Simpan profil ke LocalStorage
-        function simpanProfil(event) {
-            event.preventDefault();
-            const profilBaru = {
-                nama: document.getElementById('namaGuru').value,
-                nip: document.getElementById('nipGuru').value,
-                kelas: document.getElementById('kelasGuru').value,
-                sekolah: document.getElementById('sekolahGuru').value
+        // 2. Simpan data ke LocalStorage
+        function simpanProfil(e) {
+            e.preventDefault();
+
+            const profilData = {
+                namaSekolah: document.getElementById('namaSekolah').value,
+                tahunAjaran: document.getElementById('tahunAjaran').value,
+                semester: document.getElementById('semester').value,
+                namaGuru: document.getElementById('namaGuru').value,
+                nipGuru: document.getElementById('nipGuru').value
             };
 
-            localStorage.setItem('profilGuru', JSON.stringify(profilBaru));
-            alert("Profil guru berhasil diperbarui!");
+            localStorage.setItem('profilSekolahGuru', JSON.stringify(profilData));
+            alert("Profil Sekolah & Guru Berhasil Disimpan!");
         }
 
-        // Jalankan saat dimuat
         muatProfil();
     </script>
 </body>
