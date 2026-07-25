@@ -1,349 +1,131 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Profil Guru - Administrasi Digital Guru</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <style>
-    body {
-      background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .glass-card { background: var(--glass-bg, rgba(255, 255, 255, 0.45)); backdrop-filter: blur(25px); border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.6)); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08); }
-    .glass-inner { background: var(--inner-bg, rgba(255, 255, 255, 0.5)); backdrop-filter: blur(15px); border: 1px solid var(--inner-border, rgba(255, 255, 255, 0.7)); }
-    .glass-nav { background: var(--nav-bg, rgba(255, 255, 255, 0.65)); backdrop-filter: blur(15px); border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.8)); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Guru - Administrasi Guru</title>
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     
-    body.dark-mode { --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(255, 255, 255, 0.1); --inner-bg: rgba(30, 41, 59, 0.7); --inner-border: rgba(255, 255, 255, 0.1); --nav-bg: rgba(30, 41, 59, 0.8); --nav-border: rgba(255, 255, 255, 0.1); color: #f1f5f9; }
-    body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { color: #f8fafc; }
-    body.dark-mode .text-slate-600, body.dark-mode .text-slate-500 { color: #cbd5e1; }
-    body.dark-mode input, body.dark-mode select { background-color: rgba(15, 23, 42, 0.8); color: white; border-color: rgba(255,255,255,0.2); }
-
-    body.theme-blue { --primary-color: #2563eb; }
-    body.theme-emerald { --primary-color: #059669; }
-    body.theme-purple { --primary-color: #7c3aed; }
-    body.theme-amber { --primary-color: #d97706; }
-    .theme-active-bg { background-color: var(--primary-color, #2563eb) !important; }
-    .theme-active-text { color: var(--primary-color, #2563eb) !important; }
-  </style>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+        }
+    </style>
 </head>
-<body id="appBody" class="p-3 md:p-5 min-h-screen text-slate-800 theme-blue relative">
+<body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
 
-  <!-- BANNER NOTIFIKASI BERHASIL (TOAST) -->
-  <div id="toastSuccess" class="fixed top-5 right-5 z-50 transform translate-x-full opacity-0 transition-all duration-300 ease-out bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
-    <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-    <div>
-      <h4 class="font-bold text-xs uppercase" id="toastTitle">Berhasil Disimpan!</h4>
-      <p class="text-[11px] text-emerald-100" id="toastMsg">Profil, Logo Sekolah, dan Foto Profil telah diperbarui.</p>
-    </div>
-  </div>
+    <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-  <!-- HEADER -->
-  <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex items-center gap-4">
-      
-      <!-- LOGO SEKOLAH HEDER -->
-      <div class="relative group cursor-pointer" onclick="document.getElementById('inputLogoSekolah').click()" title="Klik untuk ganti Logo Sekolah">
-        <img id="imgLogoSekolah" src="https://via.placeholder.com/100?text=LOGO" class="w-16 h-16 rounded-2xl object-contain border-2 border-white/80 shadow-md bg-white/50 p-1">
-      </div>
+        <!-- HEADER / NAVBAR -->
+        <header class="p-4 md:px-8">
+            <div class="max-w-4xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
+                <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="user" class="w-5 h-5 text-indigo-600"></i> PROFIL GURU & KELAS
+                </h1>
+                <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
+                </a>
+            </div>
+        </header>
 
-      <div>
-        <h1 class="text-2xl font-black theme-active-text tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 mt-1">
-          <span id="txtSekolah">SD NEGERI 1 GUWA LOR</span> • 
-          <span id="txtGuru">CHAIRUL ANWAR, S.Pd</span> • 
-          <span class="italic text-slate-500">"<span id="txtMotto">BERGELORA</span>"</span>
-        </div>
-        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
-          <span id="realtimeClock" class="theme-active-text font-mono font-bold">🕒 00:00:00</span>
-          <span id="realtimeDate">...</span>
-          <span class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold"><span id="txtSemTahun">Sem. Ganjil • 2026/2027</span></span>
-        </div>
-      </div>
-    </div>
+        <!-- CONTENT UTAMA -->
+        <main class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
+            
+            <div class="glass-card rounded-2xl p-6 md:p-8 shadow-xl">
+                <!-- HEADER CARD -->
+                <div class="flex items-center gap-4 mb-6 border-b border-slate-300/60 pb-4">
+                    <div class="w-16 h-16 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl shadow-md">
+                        <i data-lucide="user-check" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-extrabold text-slate-800">Biodata Pengampu</h2>
+                        <p class="text-xs text-slate-600">Informasi ini akan ditampilkan pada lembar laporan dan cetak rapor.</p>
+                    </div>
+                </div>
 
-    <div class="flex items-center gap-3">
-      <!-- FOTO PROFIL GURU HEADER -->
-      <div class="relative group cursor-pointer" onclick="document.getElementById('inputFotoProfil').click()" title="Klik untuk ganti Foto Guru">
-        <img id="fotoProfil" src="https://via.placeholder.com/100?text=GURU" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
-      </div>
+                <!-- FORM PROFIL -->
+                <form id="formProfil" onsubmit="simpanProfil(event)" class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Guru & Gelar</label>
+                            <input type="text" id="namaGuru" placeholder="Contoh: Budi Santoso, S.Pd." required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">NIP / NUPTK</label>
+                            <input type="text" id="nipGuru" placeholder="Contoh: 19850101 201001 1 001" required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                        </div>
+                    </div>
 
-      <!-- PILIHAN TEMA & DARK MODE -->
-      <div class="flex items-center gap-2">
-        <div class="relative group">
-          <button title="Pilih Tema Warna" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="palette" class="w-4 h-4"></i></button>
-          <div class="absolute right-0 mt-1 hidden group-hover:flex bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-xl border border-slate-200 gap-2 z-50">
-            <button onclick="setThemeColor('blue')" class="w-6 h-6 rounded-full bg-blue-600 border border-white"></button>
-            <button onclick="setThemeColor('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 border border-white"></button>
-            <button onclick="setThemeColor('purple')" class="w-6 h-6 rounded-full bg-purple-600 border border-white"></button>
-            <button onclick="setThemeColor('amber')" class="w-6 h-6 rounded-full bg-amber-600 border border-white"></button>
-          </div>
-        </div>
-        <div class="bg-white/80 px-2 py-1 rounded-xl flex items-center gap-1 border border-slate-200">
-          <span class="text-xs" id="modeIcon">☀️</span>
-          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" class="toggle accent-blue-600 cursor-pointer">
-        </div>
-      </div>
-    </div>
-  </header>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Jabatan / Kelas Pengampu</label>
+                            <input type="text" id="kelasGuru" placeholder="Contoh: Wali Kelas IV-A" required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Instansi / Sekolah</label>
+                            <input type="text" id="sekolahGuru" placeholder="Contoh: SDN 1 Merdeka" required class="w-full px-3 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                        </div>
+                    </div>
 
-  <!-- NAVIGASI TAB HORIZONTAL -->
-  <nav class="flex items-center gap-2 overflow-x-auto pb-2 mb-4">
-    <a href="index.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> DASHBOARD</a>
-    <a href="absensi.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="calendar" class="w-4 h-4"></i> ABSEN HARIAN</a>
-    <a href="profile.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl theme-active-bg text-white font-bold text-xs shadow-md"><i data-lucide="user" class="w-4 h-4"></i> PROFILE</a>
-    <a href="mapel.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="book-open" class="w-4 h-4"></i> MAPEL</a>
-    <a href="siswa.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="users" class="w-4 h-4"></i> DATA SISWA</a>
-    <a href="nilai.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="star" class="w-4 h-4"></i> NILAI SISWA</a>
-    <a href="rekap.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="clipboard-list" class="w-4 h-4"></i> REKAP ABSEN</a>
-    <a href="rapor.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i> CETAK</a>
-    <a href="modul.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="folder" class="w-4 h-4"></i> RPP / MODUL</a>
-  </nav>
+                    <div class="pt-2 flex justify-end">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> SIMPAN PROFIL
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-  <!-- FORM PENGATURAN PROFIL -->
-  <main class="glass-card rounded-3xl p-6 max-w-4xl mx-auto space-y-6">
-    <div class="border-b border-slate-200/50 pb-4">
-      <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide flex items-center gap-2">
-        <i data-lucide="user-cog" class="w-6 h-6 theme-active-text"></i> Pengaturan Profil Guru & Sekolah
-      </h2>
-      <p class="text-xs font-semibold text-slate-500 mt-0.5">Ubah informasi identitas guru, logo sekolah, kelas, dan motto yang akan tampil pada header aplikasi.</p>
+        </main>
+
+        <footer class="text-center py-4 text-xs text-white/80 font-medium">
+            &copy; Aplikasi Administrasi Guru
+        </footer>
     </div>
 
-    <div class="space-y-6">
-      
-      <!-- GRID INPUT LOGO & FOTO PROFIL -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <!-- LOGO SEKOLAH INPUT -->
-        <div class="glass-inner p-4 rounded-2xl flex items-center gap-4">
-          <img id="previewLogoForm" src="https://via.placeholder.com/100?text=LOGO" class="w-16 h-16 rounded-xl object-contain border-2 border-white shadow-sm bg-white/60 p-1">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Upload Logo Sekolah</label>
-            <input type="file" id="inputLogoSekolah" accept="image/*" onchange="previewGambar(event, 'logo')" class="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
-            <p class="text-[10px] font-semibold text-slate-400 mt-1">Format: PNG / JPG transparansi.</p>
-          </div>
-        </div>
+    <!-- SCRIPT LOGIKA LOCALSTORAGE -->
+    <script>
+        lucide.createIcons();
 
-        <!-- FOTO PROFIL INPUT -->
-        <div class="glass-inner p-4 rounded-2xl flex items-center gap-4">
-          <img id="previewFotoForm" src="https://via.placeholder.com/100?text=GURU" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm">
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Upload Foto Guru</label>
-            <input type="file" id="inputFotoProfil" accept="image/*" onchange="previewGambar(event, 'foto')" class="text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer">
-            <p class="text-[10px] font-semibold text-slate-400 mt-1">Format: JPG / PNG. Rasio 1:1.</p>
-          </div>
-        </div>
+        // 1. Muat profil tersimpan saat halaman dibuka
+        function muatProfil() {
+            const profil = JSON.parse(localStorage.getItem('profilGuru')) || {
+                nama: "Budi Santoso, S.Pd.",
+                nip: "19850101 201001 1 001",
+                kelas: "Wali Kelas IV-A",
+                sekolah: "SDN 1 Merdeka"
+            };
 
-      </div>
+            document.getElementById('namaGuru').value = profil.nama;
+            document.getElementById('nipGuru').value = profil.nip;
+            document.getElementById('kelasGuru').value = profil.kelas;
+            document.getElementById('sekolahGuru').value = profil.sekolah;
+        }
 
-      <!-- FORM INPUT DATA TEKS -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Guru (dengan Gelar)</label>
-          <input type="text" id="inNamaGuru" placeholder="Contoh: CHAIRUL ANWAR, S.Pd" class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition">
-        </div>
+        // 2. Simpan profil ke LocalStorage
+        function simpanProfil(event) {
+            event.preventDefault();
+            const profilBaru = {
+                nama: document.getElementById('namaGuru').value,
+                nip: document.getElementById('nipGuru').value,
+                kelas: document.getElementById('kelasGuru').value,
+                sekolah: document.getElementById('sekolahGuru').value
+            };
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">NIP Guru</label>
-          <input type="text" id="inNipGuru" placeholder="Contoh: 19850101 201001 1 001" class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition font-mono">
-        </div>
+            localStorage.setItem('profilGuru', JSON.stringify(profilBaru));
+            alert("Profil guru berhasil diperbarui!");
+        }
 
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Sekolah</label>
-          <input type="text" id="inSekolah" placeholder="Contoh: SD NEGERI 1 GUWA LOR" class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Kelas yang Diampu</label>
-          <input type="text" id="inKelas" placeholder="Contoh: KELAS 4A" class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Motto / Slogan Kelas</label>
-          <input type="text" id="inMotto" placeholder="Contoh: BERGELORA" class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Semester & Tahun Ajaran</label>
-          <input type="text" id="inSemTahun" placeholder="Contoh: Sem. Ganjil • 2026/2027" class="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition">
-        </div>
-
-      </div>
-
-      <!-- TOMBOL SIMPAN -->
-      <div class="flex items-center justify-end gap-3 pt-2">
-        <button type="button" onclick="simpanProfil()" class="theme-active-bg text-white font-bold text-xs px-6 py-3 rounded-xl shadow-lg hover:opacity-90 transition flex items-center gap-2 cursor-pointer">
-          <i data-lucide="save" class="w-4 h-4"></i> Simpan Profil
-        </button>
-      </div>
-
-    </div>
-  </main>
-
-  <script>
-    let tempFotoBase64 = null;
-    let tempLogoBase64 = null;
-
-    function startClock() {
-      setInterval(() => {
-        const now = new Date();
-        document.getElementById('realtimeClock').innerText = '🕒 ' + now.toLocaleTimeString('id-ID');
-        document.getElementById('realtimeDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      }, 1000);
-    }
-
-    function setThemeColor(c) {
-      document.getElementById('appBody').className = `p-3 md:p-5 min-h-screen text-slate-800 theme-${c}` + (document.getElementById('darkModeToggle').checked ? ' dark-mode' : '');
-      localStorage.setItem('prefThemeColor', c);
-    }
-
-    function toggleDarkMode(d) {
-      document.getElementById('appBody').classList.toggle('dark-mode', d);
-      document.getElementById('modeIcon').innerText = d ? '🌙' : '☀️';
-      localStorage.setItem('prefDarkMode', d);
-    }
-
-    function showToast(title, msg, isError = false) {
-      const toast = document.getElementById('toastSuccess');
-      document.getElementById('toastTitle').innerText = title;
-      document.getElementById('toastMsg').innerText = msg;
-
-      if(isError) {
-        toast.className = "fixed top-5 right-5 z-50 transform transition-all duration-300 ease-out bg-red-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 translate-x-0 opacity-100";
-      } else {
-        toast.className = "fixed top-5 right-5 z-50 transform transition-all duration-300 ease-out bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 translate-x-0 opacity-100";
-      }
-
-      setTimeout(() => {
-        toast.className = "fixed top-5 right-5 z-50 transform transition-all duration-300 ease-out bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 translate-x-full opacity-0";
-      }, 3500);
-    }
-
-    // Kompresi Gambar Otomatis (Foto & Logo)
-    function previewGambar(e, jenis) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          const img = new Image();
-          img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 200;
-            const scaleSize = MAX_WIDTH / img.width;
-            canvas.width = MAX_WIDTH;
-            canvas.height = img.height * scaleSize;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-            const resultBase64 = canvas.toDataURL(jenis === 'logo' ? 'image/png' : 'image/jpeg', 0.8);
-
-            if(jenis === 'logo') {
-              tempLogoBase64 = resultBase64;
-              document.getElementById('previewLogoForm').src = resultBase64;
-              document.getElementById('imgLogoSekolah').src = resultBase64;
-            } else {
-              tempFotoBase64 = resultBase64;
-              document.getElementById('previewFotoForm').src = resultBase64;
-              document.getElementById('fotoProfil').src = resultBase64;
-            }
-          };
-          img.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function loadSavedProfil() {
-      const nama = localStorage.getItem('txtGuru') || 'CHAIRUL ANWAR, S.Pd';
-      const sekolah = localStorage.getItem('txtSekolah') || 'SD NEGERI 1 GUWA LOR';
-      const motto = localStorage.getItem('txtMotto') || 'BERGELORA';
-      const kelas = localStorage.getItem('txtKelas') || 'KELAS 4A';
-      const nip = localStorage.getItem('txtNip') || '';
-      const semTahun = localStorage.getItem('txtSemTahun') || 'Sem. Ganjil • 2026/2027';
-      const foto = localStorage.getItem('fotoGuruURL');
-      const logo = localStorage.getItem('logoSekolahURL');
-
-      document.getElementById('inNamaGuru').value = nama;
-      document.getElementById('inSekolah').value = sekolah;
-      document.getElementById('inMotto').value = motto;
-      document.getElementById('inKelas').value = kelas;
-      document.getElementById('inNipGuru').value = nip;
-      document.getElementById('inSemTahun').value = semTahun;
-
-      document.getElementById('txtGuru').innerText = nama;
-      document.getElementById('txtSekolah').innerText = sekolah;
-      document.getElementById('txtMotto').innerText = motto;
-      document.getElementById('txtSemTahun').innerText = semTahun;
-
-      if (foto) {
-        document.getElementById('fotoProfil').src = foto;
-        document.getElementById('previewFotoForm').src = foto;
-      }
-      if (logo) {
-        document.getElementById('imgLogoSekolah').src = logo;
-        document.getElementById('previewLogoForm').src = logo;
-      }
-    }
-
-    function simpanProfil() {
-      const nama = document.getElementById('inNamaGuru').value.trim();
-      const sekolah = document.getElementById('inSekolah').value.trim();
-      const motto = document.getElementById('inMotto').value.trim();
-      const kelas = document.getElementById('inKelas').value.trim();
-      const nip = document.getElementById('inNipGuru').value.trim();
-      const semTahun = document.getElementById('inSemTahun').value.trim();
-
-      if(!nama || !sekolah) {
-        showToast('Gagal Menyimpan', 'Nama Guru dan Nama Sekolah Wajib Diisi!', true);
-        return;
-      }
-
-      // Simpan Teks Utama
-      localStorage.setItem('txtGuru', nama);
-      localStorage.setItem('txtSekolah', sekolah);
-      localStorage.setItem('txtMotto', motto);
-      localStorage.setItem('txtKelas', kelas);
-      localStorage.setItem('txtNip', nip);
-      localStorage.setItem('txtSemTahun', semTahun);
-
-      // Simpan Gambar secara aman
-      try {
-        if (tempFotoBase64) localStorage.setItem('fotoGuruURL', tempFotoBase64);
-        if (tempLogoBase64) localStorage.setItem('logoSekolahURL', tempLogoBase64);
-      } catch (err) {
-        console.warn('Ukuran gambar terlalu besar untuk penyimpanan browser.');
-      }
-
-      // Update Tampilan Header secara Realtime
-      document.getElementById('txtGuru').innerText = nama;
-      document.getElementById('txtSekolah').innerText = sekolah;
-      document.getElementById('txtMotto').innerText = motto;
-      document.getElementById('txtSemTahun').innerText = semTahun;
-
-      // Tampilkan Notifikasi Banner
-      showToast('Berhasil Disimpan!', 'Profil, Logo Sekolah, dan Foto Guru telah diperbarui.');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons(); 
-      startClock();
-      loadSavedProfil();
-
-      const savedTheme = localStorage.getItem('prefThemeColor'); 
-      if(savedTheme) setThemeColor(savedTheme);
-      
-      const savedDark = localStorage.getItem('prefDarkMode') === 'true'; 
-      if(savedDark) { 
-        document.getElementById('darkModeToggle').checked = true; 
-        toggleDarkMode(true); 
-      }
-    });
-  </script>
+        // Jalankan saat dimuat
+        muatProfil();
+    </script>
 </body>
 </html>
