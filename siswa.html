@@ -21,6 +21,39 @@
             background: rgba(255, 255, 255, 0.6);
             border: 1px solid rgba(203, 213, 225, 0.8);
         }
+
+        /* DOKUMEN CETAK / PRINT STYLING */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .glass-card {
+                background: none !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            #areaCetak {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 6px 10px !important;
+                color: black !important;
+            }
+            .kolom-aksi {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
@@ -28,7 +61,7 @@
     <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
         <!-- HEADER / NAVBAR -->
-        <header class="p-4 md:px-8">
+        <header class="p-4 md:px-8 no-print">
             <div class="max-w-5xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
                 <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i> KELOLA DATA SISWA
@@ -43,7 +76,7 @@
         <main class="max-w-5xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
             
             <!-- PANEL FITUR IMPOR & DOWNLOAD FORMAT EXCEL -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="glass-card rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
                 <div>
                     <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i> Impor Masal via Excel
@@ -64,7 +97,7 @@
             </div>
 
             <!-- FORM INPUT SISWA MANUAL BARU -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl">
+            <div class="glass-card rounded-2xl p-6 shadow-xl no-print">
                 <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
                     <i data-lucide="user-plus" class="w-4 h-4 text-indigo-600"></i> Tambah Siswa Manual
                 </h2>
@@ -82,16 +115,27 @@
             </div>
 
             <!-- TABEL DAFTAR SISWA TERSIMPAN -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+            <div id="areaCetak" class="glass-card rounded-2xl p-6 shadow-xl">
+                <!-- JUDUL KHUSUS HANYA KETIKA DICETAK PDF -->
+                <div class="hidden print:block text-center mb-6">
+                    <h1 class="text-xl font-bold uppercase tracking-wider">DAFTAR DATA SISWA KELAS</h1>
+                    <p class="text-xs text-gray-600">Aplikasi Administrasi Guru</p>
+                    <hr class="border-black mt-2">
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 no-print">
                     <div class="flex items-center gap-2">
                         <h2 class="text-base font-bold text-slate-800">Daftar Siswa Tersimpan</h2>
                         <span id="totalSiswa" class="text-xs font-bold bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">0 Siswa</span>
                     </div>
-                    <div class="flex gap-2">
-                        <!-- Tombol Export Excel -->
+                    
+                    <!-- TOMBOL UNDUH EXCEL & CETAK PDF -->
+                    <div class="flex flex-wrap gap-2">
                         <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
-                            <i data-lucide="download" class="w-4 h-4"></i> EXPORT EXCEL
+                            <i data-lucide="download" class="w-4 h-4"></i> UNDUH EXCEL
+                        </button>
+                        <button onclick="cetakPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                            <i data-lucide="printer" class="w-4 h-4"></i> CETAK PDF
                         </button>
                     </div>
                 </div>
@@ -104,7 +148,7 @@
                                 <th scope="col" class="px-4 py-3 w-40">NISN</th>
                                 <th scope="col" class="px-4 py-3">NAMA SISWA</th>
                                 <th scope="col" class="px-4 py-3 text-center w-24">L/P</th>
-                                <th scope="col" class="px-4 py-3 text-center w-20">AKSI</th>
+                                <th scope="col" class="px-4 py-3 text-center w-20 kolom-aksi">AKSI</th>
                             </tr>
                         </thead>
                         <tbody id="tabelSiswaBody" class="divide-y divide-slate-200">
@@ -116,7 +160,7 @@
 
         </main>
 
-        <footer class="text-center py-4 text-xs text-white/80 font-medium">
+        <footer class="text-center py-4 text-xs text-white/80 font-medium no-print">
             &copy; Aplikasi Administrasi Guru
         </footer>
     </div>
@@ -143,7 +187,7 @@
                             <td class="px-4 py-3 font-semibold text-slate-700">${siswa.nisn || '-'}</td>
                             <td class="px-4 py-3 font-semibold text-slate-900">${siswa.nama}</td>
                             <td class="px-4 py-3 text-center font-bold text-indigo-600">${siswa.jk}</td>
-                            <td class="px-4 py-3 text-center">
+                            <td class="px-4 py-3 text-center kolom-aksi">
                                 <button onclick="hapusSiswa(${index})" class="bg-rose-500 hover:bg-rose-600 text-white p-1.5 rounded-lg transition" title="Hapus">
                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                 </button>
@@ -207,7 +251,6 @@
                 const firstSheet = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheet];
                 
-                // Ubah Sheet ke JSON
                 const rows = XLSX.utils.sheet_to_json(worksheet);
 
                 if (rows.length === 0) {
@@ -215,7 +258,6 @@
                     return;
                 }
 
-                // Tambahkan data dari Excel ke daftarSiswa
                 rows.forEach(row => {
                     const nisn = row["NISN"] || row["nisn"] || "";
                     const nama = row["NAMA SISWA"] || row["Nama Siswa"] || row["NAMA"] || row["nama"] || "";
@@ -235,12 +277,12 @@
 
                 renderTabel();
                 alert(`Berhasil mengimpor ${rows.length} data siswa!`);
-                event.target.value = ''; // Reset input file
+                event.target.value = '';
             };
             reader.readAsArrayBuffer(file);
         }
 
-        // 7. EXPORT DATA SISWA KE EXCEL
+        // 7. UNDUH EXCEL
         function exportExcel() {
             if (daftarSiswa.length === 0) {
                 alert("Tidak ada data siswa untuk di-export!");
@@ -259,6 +301,15 @@
             XLSX.utils.book_append_sheet(workbook, worksheet, "Data Siswa");
 
             XLSX.writeFile(workbook, "Data_Siswa_Kelas.xlsx");
+        }
+
+        // 8. CETAK PDF
+        function cetakPDF() {
+            if (daftarSiswa.length === 0) {
+                alert("Tidak ada data siswa untuk dicetak!");
+                return;
+            }
+            window.print();
         }
 
         // Jalankan saat dimuat
