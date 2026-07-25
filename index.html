@@ -665,29 +665,22 @@
       }
     });
   </script>
-  <!-- KODE BACKSOUND MUSIK -->
-<div style="display:none;">
-  <iframe 
-    id="audioPlayer" 
-    width="0" 
-    height="0" 
-    src="" 
-    frameborder="0" 
-    allow="autoplay">
-  </iframe>
-</div>
+<!-- KODE BACKSOUND MUSIK MP3 -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="Bayalangu.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-  let musicStarted = false;
-
-  function startMusic() {
-    if (!musicStarted) {
-      document.getElementById('audioPlayer').src = "https://www.youtube.com/embed/Mq879jg1aAc?autoplay=1&loop=1&playlist=Mq879jg1aAc";
-      musicStarted = true;
+  function playAudio() {
+    var audio = document.getElementById("bgMusic");
+    if (audio) {
+      audio.play().catch(function(e) { console.log(e); });
     }
   }
 
-  document.addEventListener('click', startMusic, { once: true });
+  // Musik akan langsung menyala saat ada klik pertama di mana saja
+  document.addEventListener('click', playAudio, { once: true });
 </script>
+
 </body>
 </html>
