@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panduan Penggunaan - Administrasi Guru</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
-    <!-- Header / Navbar -->
+    <!-- Header -->
     <header class="bg-indigo-600 text-white shadow-md">
         <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
             <h1 class="text-xl font-bold flex items-center gap-2">
@@ -22,61 +21,58 @@
         </div>
     </header>
 
-    <!-- Content -->
+    <!-- Content / Isi Panduan -->
     <main class="max-w-4xl mx-auto px-6 py-8 flex-1 w-full">
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
             <div>
-                <h2 class="text-2xl font-bold text-slate-900 mb-2">Selamat Datang di Aplikasi Administrasi Guru</h2>
-                <p class="text-slate-600">Panduan singkat ini akan membantu Anda memahami fitur-fitur utama yang ada di dalam aplikasi.</p>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Panduan Penggunaan Aplikasi</h2>
+                <p class="text-slate-600">Berikut adalah tata cara dan petunjuk penggunaan fitur dalam Aplikasi Administrasi Guru.</p>
             </div>
 
             <hr class="border-slate-200">
 
-            <!-- Fitur List -->
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
-                        <i class="fa-solid fa-users"></i> Kelola Data Siswa
+            <div class="space-y-4">
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <h3 class="font-bold text-indigo-600 flex items-center gap-2 text-lg mb-2">
+                        <i class="fa-solid fa-1"></i> Pengelolaan Data Siswa
                     </h3>
-                    <p class="text-sm text-slate-600">Tambah, edit, dan atur data siswa serta kelas dengan mudah.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Masuk ke menu **Siswa** untuk menambah, mengedit, atau menghapus daftar siswa. Kamu juga bisa mengelompokkan siswa berdasarkan kelas dan rombel masing-masing.
+                    </p>
                 </div>
 
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
-                        <i class="fa-solid fa-clipboard-user"></i> Absensi & Presensi
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <h3 class="font-bold text-indigo-600 flex items-center gap-2 text-lg mb-2">
+                        <i class="fa-solid fa-2"></i> Presensi & Absensi Harian
                     </h3>
-                    <p class="text-sm text-slate-600">Pencatatan kehadiran harian siswa secara digital dan real-time.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Buka menu **Absensi** untuk mencatat kehadiran harian. Cukup pilih status (Hadir, Izin, Sakit, Alpa), lalu simpan. Data akan tersimpan secara otomatis.
+                    </p>
                 </div>
 
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
-                        <i class="fa-solid fa-book"></i> Modul & Mapel
+                <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <h3 class="font-bold text-indigo-600 flex items-center gap-2 text-lg mb-2">
+                        <i class="fa-solid fa-3"></i> Pengaturan Identitas Guru
                     </h3>
-                    <p class="text-sm text-slate-600">Atur mata pelajaran dan materi pembelajaran yang diampu.</p>
-                </div>
-
-                <div class="p-4 bg-slate-50 rounded-lg border border-slate-100">
-                    <h3 class="font-semibold text-indigo-600 flex items-center gap-2 mb-1">
-                        <i class="fa-solid fa-file-invoice"></i> Laporan & Rekap
-                    </h3>
-                    <p class="text-sm text-slate-600">Unduh atau cetak rekapitulasi data administrasi dalam satu klik.</p>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        Buka menu **Pengaturan** untuk mengisi Nama Guru, NIP, serta Nama Sekolah agar tercetak otomatis pada laporan administrasi.
+                    </p>
                 </div>
             </div>
 
-            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg mt-6">
                 <p class="text-sm text-indigo-900 font-medium">
-                    <i class="fa-solid fa-circle-info mr-1"></i> Catatan:
+                    <i class="fa-solid fa-circle-info mr-1"></i> Informasi PWA:
                 </p>
                 <p class="text-sm text-indigo-800 mt-1">
-                    Aplikasi ini berbasis Progressive Web App (PWA), sehingga dapat diakses secara offline setelah pertama kali dimuat.
+                    Aplikasi ini bisa dipasang (install) langsung di HP atau laptop kamu melalui tombol "Add to Home Screen" di browser agar bisa diakses tanpa internet!
                 </p>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-200 bg-white">
-        &copy; Aplikasi Administrasi Guru.
+        &copy; Aplikasi Administrasi Guru
     </footer>
 
 </body>
