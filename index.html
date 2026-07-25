@@ -670,16 +670,39 @@
   <source src="Bayalangu.mp3" type="audio/mpeg">
 </audio>
 
+<!-- TOMBOL MUSIK MELAYANG -->
+<button id="musicBtn" onclick="toggleMusic()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #2563eb; color: white; border: none; padding: 10px 18px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+  🎵 Putar Musik
+</button>
+
 <script>
-  function playAudio() {
-    var audio = document.getElementById("bgMusic");
-    if (audio) {
-      audio.play().catch(function(e) { console.log(e); });
+  var audio = document.getElementById("bgMusic");
+  var btn = document.getElementById("musicBtn");
+
+  function toggleMusic() {
+    if (audio.paused) {
+      audio.play().then(() => {
+        btn.innerHTML = "⏸️ Hentikan Musik";
+        btn.style.background = "#dc2626"; // Berubah merah saat berputar
+      }).catch(err => {
+        alert("Gagal memutar audio! Pastikan browser diizinkan memutar suara.");
+      });
+    } else {
+      audio.pause();
+      btn.innerHTML = "🎵 Putar Musik";
+      btn.style.background = "#2563eb"; // Berubah biru saat mati
     }
   }
 
-  // Musik akan langsung menyala saat ada klik pertama di mana saja
-  document.addEventListener('click', playAudio, { once: true });
+  // Coba putar otomatis saat pengunjung klik pertama kali di mana saja pada layar
+  document.addEventListener('click', function() {
+    if (audio.paused) {
+      audio.play().then(() => {
+        btn.innerHTML = "⏸️ Hentikan Musik";
+        btn.style.background = "#dc2626";
+      }).catch(() => {});
+    }
+  }, { once: true });
 </script>
 
 </body>
