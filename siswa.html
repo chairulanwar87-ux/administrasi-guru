@@ -1,335 +1,156 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Data Siswa - Administrasi Digital Guru</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
-  <!-- Library XLSX untuk Impor & Download Template -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-  <style>
-    body {
-      background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .glass-card { background: var(--glass-bg, rgba(255, 255, 255, 0.45)); backdrop-filter: blur(25px); border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.6)); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08); }
-    .glass-inner { background: var(--inner-bg, rgba(255, 255, 255, 0.5)); backdrop-filter: blur(15px); border: 1px solid var(--inner-border, rgba(255, 255, 255, 0.7)); }
-    .glass-nav { background: var(--nav-bg, rgba(255, 255, 255, 0.65)); backdrop-filter: blur(15px); border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.8)); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Siswa - Administrasi Guru</title>
+    <!-- Tailwind CSS & Lucide Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     
-    body.dark-mode { --glass-bg: rgba(15, 23, 42, 0.75); --glass-border: rgba(255, 255, 255, 0.1); --inner-bg: rgba(30, 41, 59, 0.7); --inner-border: rgba(255, 255, 255, 0.1); --nav-bg: rgba(30, 41, 59, 0.8); --nav-border: rgba(255, 255, 255, 0.1); color: #f1f5f9; }
-    body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { color: #f8fafc; }
-    body.dark-mode .text-slate-600, body.dark-mode .text-slate-500 { color: #cbd5e1; }
-    body.dark-mode input, body.dark-mode select { background-color: rgba(15, 23, 42, 0.8); color: white; border-color: rgba(255,255,255,0.2); }
-
-    body.theme-blue { --primary-color: #2563eb; }
-    body.theme-emerald { --primary-color: #059669; }
-    body.theme-purple { --primary-color: #7c3aed; }
-    body.theme-amber { --primary-color: #d97706; }
-    .theme-active-bg { background-color: var(--primary-color, #2563eb) !important; }
-    .theme-active-text { color: var(--primary-color, #2563eb) !important; }
-  </style>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+        }
+    </style>
 </head>
-<body id="appBody" class="p-3 md:p-5 min-h-screen text-slate-800 theme-blue">
+<body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
 
-  <!-- HEADER -->
-  <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
-    <div class="flex items-center gap-4">
-      <div class="relative group cursor-pointer" onclick="document.getElementById('uploadFoto').click()">
-        <img id="fotoProfil" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
-        <input type="file" id="uploadFoto" accept="image/*" class="hidden" onchange="gantiFoto(event)">
-      </div>
-      <div>
-        <h1 class="text-2xl font-black theme-active-text tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
-        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 mt-1">
-          <span id="txtSekolah">SD NEGERI 1 GUWA LOR</span> • <span id="txtGuru">CHAIRUL ANWAR, S.Pd</span> • <span class="italic text-slate-500">"BERGELORA"</span>
-        </div>
-        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
-          <span id="realtimeClock" class="theme-active-text font-mono font-bold">🕒 00:00:00</span>
-          <span id="realtimeDate">...</span>
-          <span class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Sem. Ganjil • 2026/2027</span>
-        </div>
-      </div>
-    </div>
-    <div class="flex items-center gap-2">
-      <div class="relative group">
-        <button title="Pilih Tema Warna" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="palette" class="w-4 h-4"></i></button>
-        <div class="absolute right-0 mt-1 hidden group-hover:flex bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-xl border border-slate-200 gap-2 z-50">
-          <button onclick="setThemeColor('blue')" class="w-6 h-6 rounded-full bg-blue-600 border border-white"></button>
-          <button onclick="setThemeColor('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 border border-white"></button>
-          <button onclick="setThemeColor('purple')" class="w-6 h-6 rounded-full bg-purple-600 border border-white"></button>
-          <button onclick="setThemeColor('amber')" class="w-6 h-6 rounded-full bg-amber-600 border border-white"></button>
-        </div>
-      </div>
-      <div class="bg-white/80 px-2 py-1 rounded-xl flex items-center gap-1 border border-slate-200">
-        <span class="text-xs" id="modeIcon">☀️</span>
-        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" class="toggle accent-blue-600 cursor-pointer">
-      </div>
-    </div>
-  </header>
+    <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
 
-  <!-- NAVIGASI TAB HORIZONTAL -->
-  <nav class="flex items-center gap-2 overflow-x-auto pb-2 mb-4">
-    <a href="index.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> DASHBOARD</a>
-    <a href="absensi.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="calendar" class="w-4 h-4"></i> ABSEN HARIAN</a>
-    <a href="profile.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="user" class="w-4 h-4"></i> PROFILE</a>
-    <a href="mapel.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="book-open" class="w-4 h-4"></i> MAPEL</a>
-    <a href="siswa.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl theme-active-bg text-white font-bold text-xs shadow-md"><i data-lucide="users" class="w-4 h-4"></i> DATA SISWA</a>
-    <a href="nilai.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="star" class="w-4 h-4"></i> NILAI SISWA</a>
-    <a href="rekap.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="clipboard-list" class="w-4 h-4"></i> REKAP ABSEN</a>
-    <a href="rapor.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="printer" class="w-4 h-4"></i> CETAK</a>
-    <a href="modul.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm"><i data-lucide="folder" class="w-4 h-4"></i> RPP / MODUL</a>
-  </nav>
+        <!-- HEADER / NAVBAR -->
+        <header class="p-4 md:px-8">
+            <div class="max-w-5xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
+                <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i> KELOLA DATA SISWA
+                </h1>
+                <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
+                </a>
+            </div>
+        </header>
 
-  <!-- KONTEN KELOLA DATA SISWA -->
-  <main class="space-y-6">
-    <div class="glass-card rounded-3xl p-6">
-      <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide flex items-center gap-2 mb-1">
-        <i data-lucide="user-plus" class="w-6 h-6 theme-active-text"></i> Kelola Data Siswa
-      </h2>
-      <p class="text-xs font-semibold text-slate-500 mb-6">Tambah siswa manual atau import sekaligus dari file Excel.</p>
-
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
-        
-        <!-- FORM TAMBAH MANUAL -->
-        <div class="md:col-span-2 glass-inner p-5 rounded-2xl flex flex-col justify-between">
-          <form id="formSiswa" onsubmit="simpanSiswa(event)" class="space-y-4">
-            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
-              <i data-lucide="user-plus" class="w-4 h-4 theme-active-text"></i> Tambah Siswa Manual
-            </h3>
+        <!-- CONTENT UTAMA -->
+        <main class="max-w-5xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
             
-            <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Nama Lengkap</label>
-              <input type="text" id="namaSiswa" required placeholder="Contoh: Ahmad Fauzi" class="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition">
+            <!-- FORM INPUT SISWA BARU -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                    <i data-lucide="user-plus" class="w-4 h-4 text-indigo-600"></i> Tambah Siswa Baru
+                </h2>
+                <form id="formSiswa" onsubmit="tambahSiswa(event)" class="flex flex-col md:flex-row gap-3">
+                    <input type="text" id="namaSiswa" placeholder="Masukkan Nama Lengkap Siswa" required class="flex-1 px-4 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                    <select id="jenisKelamin" class="px-4 py-2.5 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-semibold">
+                        <option value="L">Laki-Laki (L)</option>
+                        <option value="P">Perempuan (P)</option>
+                    </select>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> SIMPAN SISWA
+                    </button>
+                </form>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">NISN / NIS</label>
-              <input type="text" id="nisnSiswa" required placeholder="0012345678" class="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition font-mono">
+            <!-- TABEL DAFTAR SISWA -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-bold text-slate-800">Daftar Siswa Tersimpan</h2>
+                    <span id="totalSiswa" class="text-xs font-bold bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">0 Siswa</span>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-xs text-left text-slate-700 bg-white/70">
+                        <thead class="text-xs text-slate-800 uppercase bg-slate-200/80 border-b border-slate-300">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-center">No</th>
+                                <th scope="col" class="px-4 py-3">Nama Siswa</th>
+                                <th scope="col" class="px-4 py-3 text-center">L/P</th>
+                                <th scope="col" class="px-4 py-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelSiswaBody" class="divide-y divide-slate-200">
+                            <!-- Data otomatis muncul lewat JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">Jenis Kelamin</label>
-              <select id="jkSiswa" class="w-full px-3 py-2 text-xs font-medium rounded-xl border border-slate-300 outline-none focus:border-blue-500 transition cursor-pointer">
-                <option value="L">Laki-Laki (L)</option>
-                <option value="P">Perempuan (P)</option>
-              </select>
-            </div>
+        </main>
 
-            <button type="submit" class="w-full theme-active-bg text-white font-bold text-xs py-2.5 rounded-xl shadow-md hover:opacity-90 transition">
-              Simpan Siswa
-            </button>
-          </form>
-        </div>
-
-        <!-- IMPORT EXCEL -->
-        <div class="md:col-span-3 glass-inner p-5 rounded-2xl flex flex-col justify-between space-y-3">
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600"></i> Import Data dari Excel
-              </h3>
-              
-              <!-- TOMBOL DOWNLOAD TEMPLATE -->
-              <button type="button" onclick="downloadTemplateExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] px-3 py-1.5 rounded-xl shadow transition flex items-center gap-1">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Format Excel
-              </button>
-            </div>
-            
-            <p class="text-[11px] font-semibold text-slate-500">
-              Upload file `.xlsx` dengan nama kolom baris pertama: <b>Nama</b>, <b>NISN</b>, dan <b>JK</b> (L/P).
-            </p>
-          </div>
-
-          <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center cursor-pointer hover:border-blue-500 transition bg-white/40" onclick="document.getElementById('inputExcel').click()">
-            <input type="file" id="inputExcel" accept=".xlsx, .xls" class="hidden" onchange="importExcel(event)">
-            <i data-lucide="upload-cloud" class="w-10 h-10 theme-active-text mx-auto mb-2"></i>
-            <p class="text-xs font-bold text-slate-700">Klik atau geser file Excel ke sini</p>
-            <p class="text-[10px] text-slate-400 font-medium">Format yang didukung: .xlsx, .xls</p>
-          </div>
-        </div>
-
-      </div>
+        <footer class="text-center py-4 text-xs text-white/80 font-medium">
+            &copy; Aplikasi Administrasi Guru
+        </footer>
     </div>
 
-    <!-- TABEL DAFTAR SISWA -->
-    <div class="glass-card rounded-3xl p-6">
-      <div class="flex items-center justify-between mb-4 border-b border-slate-200/50 pb-3">
-        <h3 class="text-base font-bold text-slate-800 uppercase flex items-center gap-2">
-          <i data-lucide="users" class="w-5 h-5 theme-active-text"></i> Daftar Siswa Kelas
-        </h3>
-        <button onclick="hapusSemuaSiswa()" class="bg-red-500/10 hover:bg-red-500 hover:text-white text-red-600 font-bold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Hapus Semua Data
-        </button>
-      </div>
+    <!-- SCRIPT LOGIKA LOCALSTORAGE -->
+    <script>
+        lucide.createIcons();
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left">
-          <thead>
-            <tr class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-200/60">
-              <th class="py-3 px-4 w-12 text-center">NO</th>
-              <th class="py-3 px-4">NISN</th>
-              <th class="py-3 px-4">NAMA SISWA</th>
-              <th class="py-3 px-4 text-center">L/P</th>
-              <th class="py-3 px-4 text-center w-20">AKSI</th>
-            </tr>
-          </thead>
-          <tbody id="tabelSiswa" class="divide-y divide-slate-200/50 text-xs font-medium">
-            <!-- Render JS -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </main>
+        // 1. Ambil data dari LocalStorage saat halaman dimuat
+        let daftarSiswa = JSON.parse(localStorage.getItem('dataSiswaGuru')) || [
+            { id: 1, nama: "Ahmad Fauzi", jk: "L" },
+            { id: 2, nama: "Biti Anisa", jk: "P" },
+            { id: 3, nama: "Citra Lestari", jk: "P" }
+        ];
 
-  <script>
-    const db = new Dexie('AdminGuruDB');
-    db.version(1).stores({
-      siswa: '++id, nisn, nama, jk'
-    });
+        // 2. Tampilkan data ke tabel
+        function renderTabel() {
+            const tbody = document.getElementById('tabelSiswaBody');
+            tbody.innerHTML = '';
 
-    function startClock() {
-      setInterval(() => {
-        const now = new Date();
-        document.getElementById('realtimeClock').innerText = '🕒 ' + now.toLocaleTimeString('id-ID');
-        document.getElementById('realtimeDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      }, 1000);
-    }
+            if (daftarSiswa.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-slate-500">Belum ada data siswa. Silahkan tambah di atas.</td></tr>`;
+            } else {
+                daftarSiswa.forEach((siswa, index) => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-100/50">
+                            <td class="px-4 py-3 text-center font-bold">${index + 1}</td>
+                            <td class="px-4 py-3 font-semibold text-slate-900">${siswa.nama}</td>
+                            <td class="px-4 py-3 text-center font-bold">${siswa.jk}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="hapusSiswa(${index})" class="bg-rose-500 hover:bg-rose-600 text-white p-1.5 rounded-lg transition" title="Hapus">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
 
-    function setThemeColor(c) {
-      document.getElementById('appBody').className = `p-3 md:p-5 min-h-screen text-slate-800 theme-${c}` + (document.getElementById('darkModeToggle').checked ? ' dark-mode' : '');
-      localStorage.setItem('prefThemeColor', c);
-    }
-
-    function toggleDarkMode(d) {
-      document.getElementById('appBody').classList.toggle('dark-mode', d);
-      document.getElementById('modeIcon').innerText = d ? '🌙' : '☀️';
-      localStorage.setItem('prefDarkMode', d);
-    }
-
-    function gantiFoto(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          document.getElementById('fotoProfil').src = ev.target.result;
-          localStorage.setItem('fotoGuruURL', ev.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    // FUNGSI DOWNLOAD TEMPLATE EXCEL BISA DOWNLOAD DENGAN FORMAT BENAR
-    function downloadTemplateExcel() {
-      const templateData = [
-        { "Nama": "Ahmad Fauzi", "NISN": "0012345678", "JK": "L" },
-        { "Nama": "Siti Nurhaliza", "NISN": "0012345679", "JK": "P" },
-        { "Nama": "Budi Santoso", "NISN": "0012345680", "JK": "L" }
-      ];
-
-      const ws = XLSX.utils.json_to_sheet(templateData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Template Siswa");
-
-      XLSX.writeFile(wb, "Template_Import_Siswa.xlsx");
-    }
-
-    async function loadSiswa() {
-      const siswaList = await db.siswa.toArray();
-      const tbody = document.getElementById('tabelSiswa');
-      tbody.innerHTML = '';
-
-      if (siswaList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500 font-bold">Belum ada data siswa. Silakan tambah manual atau impor Excel.</td></tr>`;
-        return;
-      }
-
-      siswaList.forEach((s, idx) => {
-        tbody.innerHTML += `
-          <tr class="hover:bg-white/40 transition">
-            <td class="py-3 px-4 text-center font-bold text-slate-500">${idx + 1}</td>
-            <td class="py-3 px-4 font-mono font-bold theme-active-text">${s.nisn || '-'}</td>
-            <td class="py-3 px-4 font-bold text-slate-800 uppercase">${s.nama}</td>
-            <td class="py-3 px-4 text-center font-bold">${s.jk || '-'}</td>
-            <td class="py-3 px-4 text-center">
-              <button onclick="hapusSiswa(${s.id})" class="text-red-500 hover:text-red-700 font-bold p-1 rounded-lg hover:bg-red-50"><i data-lucide="trash" class="w-4 h-4"></i></button>
-            </td>
-          </tr>
-        `;
-      });
-      lucide.createIcons();
-    }
-
-    async function simpanSiswa(e) {
-      e.preventDefault();
-      const nama = document.getElementById('namaSiswa').value.trim();
-      const nisn = document.getElementById('nisnSiswa').value.trim();
-      const jk = document.getElementById('jkSiswa').value;
-
-      await db.siswa.add({ nama, nisn, jk });
-      document.getElementById('formSiswa').reset();
-      loadSiswa();
-    }
-
-    async function hapusSiswa(id) {
-      if (confirm('Yakin ingin menghapus siswa ini?')) {
-        await db.siswa.delete(id);
-        loadSiswa();
-      }
-    }
-
-    async function hapusSemuaSiswa() {
-      if (confirm('APAKAH ANDA YAKIN? Semua data siswa akan dihapus!')) {
-        await db.siswa.clear();
-        loadSiswa();
-      }
-    }
-
-    function importExcel(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async function(ev) {
-        const data = new Uint8Array(ev.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.SheetNames[0];
-        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
-
-        let successCount = 0;
-        for (let row of rows) {
-          const nama = row['Nama'] || row['NAMA'] || row['nama'];
-          const nisn = row['NISN'] || row['nisn'] || row['NIS'] || '';
-          const jk = row['JK'] || row['jk'] || row['Jenis Kelamin'] || 'L';
-
-          if (nama) {
-            await db.siswa.add({ nama, nisn: String(nisn), jk });
-            successCount++;
-          }
+            document.getElementById('totalSiswa').innerText = `${daftarSiswa.length} Siswa`;
+            localStorage.setItem('dataSiswaGuru', JSON.stringify(daftarSiswa));
+            lucide.createIcons();
         }
 
-        alert(`Berhasil mengimpor ${successCount} data siswa!`);
-        document.getElementById('inputExcel').value = '';
-        loadSiswa();
-      };
-      reader.readAsArrayBuffer(file);
-    }
+        // 3. Fungsi Tambah Siswa
+        function tambahSiswa(event) {
+            event.preventDefault();
+            const nama = document.getElementById('namaSiswa').value.trim();
+            const jk = document.getElementById('jenisKelamin').value;
 
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons(); startClock();
-      if(localStorage.getItem('txtGuru')) document.getElementById('txtGuru').innerText = localStorage.getItem('txtGuru');
-      if(localStorage.getItem('txtSekolah')) document.getElementById('txtSekolah').innerText = localStorage.getItem('txtSekolah');
-      if(localStorage.getItem('fotoGuruURL')) document.getElementById('fotoProfil').src = localStorage.getItem('fotoGuruURL');
+            if (nama) {
+                daftarSiswa.push({ id: Date.now(), nama: nama, jk: jk });
+                document.getElementById('namaSiswa').value = '';
+                renderTabel();
+            }
+        }
 
-      const savedTheme = localStorage.getItem('prefThemeColor'); if(savedTheme) setThemeColor(savedTheme);
-      const savedDark = localStorage.getItem('prefDarkMode') === 'true'; if(savedDark) { document.getElementById('darkModeToggle').checked = true; toggleDarkMode(true); }
+        // 4. Fungsi Hapus Siswa
+        function hapusSiswa(index) {
+            if (confirm("Yakin ingin menghapus siswa ini?")) {
+                daftarSiswa.splice(index, 1);
+                renderTabel();
+            }
+        }
 
-      loadSiswa();
-    });
-  </script>
+        // Jalankan saat pertama kali dibuka
+        renderTabel();
+    </script>
 </body>
 </html>
