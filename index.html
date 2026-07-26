@@ -8,98 +8,201 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .glass-tab {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
 
-    <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
+    <div class="min-h-screen flex flex-col bg-slate-900/30 backdrop-blur-[2px] p-3 md:p-6 space-y-4">
         
-        <!-- HEADER UTAMA ASLI / SEMULA -->
-        <header class="p-3 md:p-4">
-            <div class="max-w-7xl mx-auto glass-card rounded-2xl p-3 md:p-4 shadow-xl flex items-center justify-between gap-4">
-                
-                <!-- KIRI: Foto & Identitas -->
-                <div class="flex items-center gap-3">
-                    <img id="headerFoto" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250" alt="Foto Guru" class="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-white object-cover shadow-md">
-                    <div>
-                        <h1 class="text-base md:text-xl font-black text-blue-600 tracking-wide uppercase leading-tight">
-                            ADMINISTRASI DIGITAL GURU
-                        </h1>
-                        <p class="text-xs md:text-sm font-bold text-slate-700 tracking-tight">
-                            <span id="dispSekolah">SD NEGERI 1 GUWA LOR</span> • 
-                            <span id="dispGuru">CHAIRUL ANWAR, S.Pd</span> • 
-                            "<span id="dispMotto" class="italic">BERGELORA</span>"
-                        </p>
-                        <div class="flex items-center gap-2 mt-0.5 text-[11px] font-semibold text-slate-600">
-                            <span class="flex items-center gap-1 text-blue-600 font-bold">
-                                <i data-lucide="clock" class="w-3.5 h-3.5"></i> <span id="jamDigital">16.00.00</span>
-                            </span>
-                            <span>•</span>
-                            <span id="tanggalDigital">Minggu, 26 Juli 2026</span>
-                            <span id="headerTA" class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md font-bold ml-1">Sem. Ganjil • 2026/2027</span>
-                        </div>
+        <!-- 1. HEADER UTAMA ASLI -->
+        <header class="glass-panel rounded-3xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- KIRI: Foto & Identitas Guru -->
+            <div class="flex items-center gap-3">
+                <img id="headerFoto" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250" alt="Foto Guru" class="w-14 h-14 rounded-full border-2 border-white object-cover shadow-md">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-amber-500 tracking-wider uppercase leading-none drop-shadow-sm">
+                        ADMINISTRASI DIGITAL GURU
+                    </h1>
+                    <p class="text-xs md:text-sm font-bold text-slate-700 mt-1 tracking-tight">
+                        <span id="dispSekolah">SD NEGERI 1 GUWA LOR</span> • 
+                        <span id="dispGuru">CHAIRUL ANWAR, S.Pd</span> • 
+                        "<span id="dispMotto" class="italic">BERGELORA</span>"
+                    </p>
+                    <div class="flex items-center gap-2 mt-1 text-[11px] font-bold text-slate-600">
+                        <span class="flex items-center gap-1 text-blue-600">
+                            <i data-lucide="clock" class="w-3.5 h-3.5"></i> <span id="jamDigital">16.44.42</span>
+                        </span>
+                        <span>|</span>
+                        <span id="tanggalDigital">Minggu, 26 Juli 2026</span>
+                        <span id="headerTA" class="bg-blue-600 text-white px-2 py-0.5 rounded-md text-[10px] ml-1 shadow-sm">
+                            <i data-lucide="bookmark" class="w-3 h-3 inline mr-0.5"></i> Sem. Ganjil • 2026/2027
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KANAN: Control Bar Top Menu -->
+            <div class="flex flex-wrap items-center gap-2 ml-auto">
+                <!-- Dropdown Pilih Kelas -->
+                <div class="bg-white/90 border border-slate-300 rounded-xl px-3 py-1.5 flex items-center gap-2 text-xs font-bold text-slate-700 shadow-sm">
+                    <i data-lucide="graduation-cap" class="w-4 h-4 text-slate-600"></i>
+                    <select id="selectKelas" class="bg-transparent focus:outline-none font-bold text-slate-800">
+                        <option value="4">Pilih Kelas</option>
+                        <option value="1">Kelas 1</option>
+                        <option value="2">Kelas 2</option>
+                        <option value="3">Kelas 3</option>
+                        <option value="4">Kelas 4</option>
+                        <option value="5">Kelas 5</option>
+                        <option value="6">Kelas 6</option>
+                    </select>
+                </div>
+
+                <!-- Tombol Akses Cepat (Refresh, Lock/Save, Download/Pengaturan, Theme, Dark, Fullscreen) -->
+                <button onclick="location.reload()" class="p-2 bg-white/90 hover:bg-white rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Refresh">
+                    <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                </button>
+                <button class="p-2 bg-white/90 hover:bg-white rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Simpan Data">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                </button>
+                <a href="pengaturan.html" class="p-2 bg-white/90 hover:bg-white rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Pengaturan Data">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                </a>
+                <button class="p-2 bg-white/90 hover:bg-white rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Tema">
+                    <i data-lucide="palette" class="w-4 h-4"></i>
+                </button>
+
+                <!-- Toggle Switch Sun/Moon -->
+                <div class="bg-white/90 border border-slate-300 rounded-full px-2 py-1 flex items-center gap-1 shadow-sm">
+                    <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
+                    <div class="w-8 h-4 bg-amber-400 rounded-full cursor-pointer relative flex items-center px-0.5">
+                        <div class="w-3 h-3 bg-white rounded-full shadow-md transform translate-x-4 transition"></div>
                     </div>
                 </div>
 
-                <!-- KANAN: Tombol Pengaturan (Icon Gear Semula) -->
-                <div class="flex items-center gap-2">
-                    <a href="pengaturan.html" class="p-2 bg-white hover:bg-slate-100 rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Pengaturan">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
-                    </a>
-                </div>
+                <!-- Fullscreen -->
+                <button onclick="document.documentElement.requestFullscreen()" class="p-2 bg-white/90 hover:bg-white rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Fullscreen">
+                    <i data-lucide="maximize" class="w-4 h-4"></i>
+                </button>
 
+                <!-- Baris Bawah Control (Isi Survei & Zoom Bar) -->
+                <div class="w-full flex items-center justify-end gap-2 mt-1">
+                    <button class="px-3 py-1 bg-amber-300/80 hover:bg-amber-300 text-amber-900 font-bold text-xs rounded-lg shadow-sm flex items-center gap-1">
+                        <i data-lucide="gift" class="w-3.5 h-3.5"></i> Isi Survei
+                    </button>
+                    <div class="bg-white/90 border border-slate-300 rounded-xl px-3 py-1 flex items-center gap-2 shadow-sm text-xs font-bold text-slate-600">
+                        <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
+                        <input type="range" min="80" max="120" value="100" class="w-16 accent-blue-600 h-1">
+                        <i data-lucide="zoom-out" class="w-3.5 h-3.5"></i>
+                        <span class="text-blue-600">100%</span>
+                    </div>
+                </div>
             </div>
+
         </header>
 
-        <!-- DASHBOARD MENU UTAMA SEMULA -->
-        <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-2 md:grid-cols-4 gap-4">
-            
-            <a href="siswa.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
-                <div class="p-4 bg-blue-500 text-white rounded-2xl mb-3 group-hover:bg-blue-600 transition shadow-md">
-                    <i data-lucide="users" class="w-7 h-7"></i>
-                </div>
-                <span class="font-bold text-sm text-slate-800">Data Siswa</span>
+        <!-- 2. NAVBAR MENU TAB (PERSIS SEPERTI GAMBAR) -->
+        <nav class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <a href="index.html" class="px-5 py-2.5 bg-blue-600 text-white font-black text-xs rounded-2xl shadow-lg flex items-center gap-2 tracking-wide uppercase shrink-0">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i> DASHBOARD
             </a>
-
-            <a href="nilai.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
-                <div class="p-4 bg-emerald-500 text-white rounded-2xl mb-3 group-hover:bg-emerald-600 transition shadow-md">
-                    <i data-lucide="graduation-cap" class="w-7 h-7"></i>
-                </div>
-                <span class="font-bold text-sm text-slate-800">Input Nilai</span>
+            <a href="absen.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="calendar-check" class="w-4 h-4 text-slate-600"></i> ABSEN HARIAN
             </a>
-
-            <a href="rekap.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
-                <div class="p-4 bg-amber-500 text-white rounded-2xl mb-3 group-hover:bg-amber-600 transition shadow-md">
-                    <i data-lucide="calendar-check" class="w-7 h-7"></i>
-                </div>
-                <span class="font-bold text-sm text-slate-800">Absensi Siswa</span>
+            <a href="pengaturan.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="user" class="w-4 h-4 text-slate-600"></i> PROFILE
             </a>
-
-            <a href="rapor.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
-                <div class="p-4 bg-rose-500 text-white rounded-2xl mb-3 group-hover:bg-rose-600 transition shadow-md">
-                    <i data-lucide="file-spreadsheet" class="w-7 h-7"></i>
-                </div>
-                <span class="font-bold text-sm text-slate-800">Cetak Rapor</span>
+            <a href="mapel.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="book-open" class="w-4 h-4 text-slate-600"></i> MAPEL
             </a>
+            <a href="siswa.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="users" class="w-4 h-4 text-slate-600"></i> DATA SISWA
+            </a>
+            <a href="nilai.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="star" class="w-4 h-4 text-slate-600"></i> NILAI SISWA
+            </a>
+            <a href="rekap.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-slate-600"></i> REKAP ABSEN
+            </a>
+            <a href="rapor.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="printer" class="w-4 h-4 text-slate-600"></i> CETAK
+            </a>
+            <a href="rpp.html" class="glass-tab px-4 py-2.5 text-slate-800 hover:bg-white font-bold text-xs rounded-2xl shadow-md flex items-center gap-2 tracking-wide uppercase shrink-0 transition">
+                <i data-lucide="folder" class="w-4 h-4 text-slate-600"></i> RPP / MODUL
+            </a>
+        </nav>
 
+        <!-- 3. OVERVIEW DASHBOARD & STATISTIK WARNA-WARNI -->
+        <main class="glass-panel rounded-3xl p-6 shadow-2xl space-y-4 flex-1">
+            <h2 class="text-base font-black text-slate-800 tracking-wider uppercase flex items-center gap-2">
+                <i data-lucide="layers" class="w-5 h-5 text-blue-600"></i> OVERVIEW DASHBOARD
+            </h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+                <!-- TOTAL SISWA -->
+                <div class="bg-indigo-400 text-white rounded-2xl p-4 shadow-md flex flex-col items-center justify-center text-center">
+                    <i data-lucide="users" class="w-6 h-6 mb-1"></i>
+                    <span class="text-3xl font-black">28</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">TOTAL SISWA</span>
+                </div>
+
+                <!-- LAKI-LAKI -->
+                <div class="bg-emerald-400 text-white rounded-2xl p-4 shadow-md flex flex-col items-center justify-center text-center">
+                    <i data-lucide="user" class="w-6 h-6 mb-1"></i>
+                    <span class="text-3xl font-black">17</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">LAKI-LAKI</span>
+                </div>
+
+                <!-- PEREMPUAN -->
+                <div class="bg-rose-400 text-white rounded-2xl p-4 shadow-md flex flex-col items-center justify-center text-center">
+                    <i data-lucide="user-check" class="w-6 h-6 mb-1"></i>
+                    <span class="text-3xl font-black">11</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">PEREMPUAN</span>
+                </div>
+
+                <!-- SAKIT -->
+                <div class="bg-amber-400 text-white rounded-2xl p-4 shadow-md flex flex-col items-center justify-center text-center">
+                    <i data-lucide="first-aid-kit" class="w-6 h-6 mb-1"></i>
+                    <span class="text-3xl font-black">4</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">SAKIT</span>
+                </div>
+
+                <!-- IZIN -->
+                <div class="bg-sky-400 text-white rounded-2xl p-4 shadow-md flex flex-col items-center justify-center text-center">
+                    <i data-lucide="mail" class="w-6 h-6 mb-1"></i>
+                    <span class="text-3xl font-black">0</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">IZIN</span>
+                </div>
+
+                <!-- ALPA -->
+                <div class="bg-red-400 text-white rounded-2xl p-4 shadow-md flex flex-col items-center justify-center text-center">
+                    <i data-lucide="x-circle" class="w-6 h-6 mb-1"></i>
+                    <span class="text-3xl font-black">5</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">ALPA</span>
+                </div>
+            </div>
         </main>
 
-        <footer class="text-center py-4 text-xs text-white/80 font-medium">
+        <footer class="text-center py-2 text-xs text-white/80 font-medium">
             &copy; Aplikasi Administrasi Guru Digital
         </footer>
     </div>
 
-    <!-- JAVASCRIPT ASLI -->
+    <!-- JAVASCRIPT BACA PROFIL -->
     <script>
         lucide.createIcons();
 
-        // Memuat profil dari localStorage (jika ada yang diedit dari pengaturan.html)
         function muatData() {
             const profil = JSON.parse(localStorage.getItem('profilSekolahGuru')) || {
                 namaSekolah: "SD NEGERI 1 GUWA LOR",
@@ -109,22 +212,20 @@
                 foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250"
             };
 
-            document.getElementById('dispSekolah').innerText = profil.namaSekolah || "SD NEGERI 1 GUWA LOR";
-            document.getElementById('dispGuru').innerText = profil.namaGuru || "CHAIRUL ANWAR, S.Pd";
-            document.getElementById('dispMotto').innerText = profil.motto || "BERGELORA";
-            if (document.getElementById('headerTA')) {
-                document.getElementById('headerTA').innerText = `Sem. Ganjil • ${profil.tahunAjaran || '2026/2027'}`;
-            }
-            if (profil.foto && document.getElementById('headerFoto')) {
-                document.getElementById('headerFoto').src = profil.foto;
-            }
+            if(document.getElementById('dispSekolah')) document.getElementById('dispSekolah').innerText = profil.namaSekolah || "SD NEGERI 1 GUWA LOR";
+            if(document.getElementById('dispGuru')) document.getElementById('dispGuru').innerText = profil.namaGuru || "CHAIRUL ANWAR, S.Pd";
+            if(document.getElementById('dispMotto')) document.getElementById('dispMotto').innerText = profil.motto || "BERGELORA";
+            if(profil.foto && document.getElementById('headerFoto')) document.getElementById('headerFoto').src = profil.foto;
         }
 
-        // Jam Digital
         function updateJam() {
             const now = new Date();
-            document.getElementById('jamDigital').innerText = `${String(now.getHours()).padStart(2,'0')}.${String(now.getMinutes()).padStart(2,'0')}.${String(now.getSeconds()).padStart(2,'0')}`;
-            document.getElementById('tanggalDigital').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            if(document.getElementById('jamDigital')) {
+                document.getElementById('jamDigital').innerText = `${String(now.getHours()).padStart(2,'0')}.${String(now.getMinutes()).padStart(2,'0')}.${String(now.getSeconds()).padStart(2,'0')}`;
+            }
+            if(document.getElementById('tanggalDigital')) {
+                document.getElementById('tanggalDigital').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
