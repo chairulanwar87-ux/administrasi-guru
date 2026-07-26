@@ -54,7 +54,7 @@
 <body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col bg-cover bg-center bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920');">
 
     <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
-        <!-- HEADER / NAVBAR (NO PRINT) -->
+        <!-- HEADER / NAVBAR -->
         <header class="p-4 md:px-8 no-print">
             <div class="max-w-4xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
                 <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -69,31 +69,29 @@
         <!-- CONTENT UTAMA -->
         <main class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
 
-            <!-- PANEL PILIH SISWA & TOMBOL CETAK (NO PRINT) -->
+            <!-- PANEL PILIH SISWA & TOMBOL -->
             <div class="glass-card rounded-2xl p-6 shadow-xl flex flex-col md:flex-row justify-between items-center gap-4 no-print">
                 <div class="w-full md:w-1/2">
                     <label class="block font-bold text-slate-700 text-xs mb-1">Pilih Siswa untuk Dicetak:</label>
                     <select id="selectSiswa" onchange="gantiSiswa()" class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-xs">
-                        <!-- Populated via JS -->
                     </select>
                 </div>
                 <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-                    <!-- Tombol Membuka Modal (Tidak memicu Error 404 lagi) -->
-                    <button onclick="bukaModalProfil()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
-                        <i data-lucide="user-check" class="w-4 h-4"></i> Edit Profil & Kelas
-                    </button>
+                    <!-- LINK TERKONEKSI LANGSUNG KE PENGATURAN.HTML -->
+                    <a href="pengaturan.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
+                        <i data-lucide="settings" class="w-4 h-4"></i> Edit Profil & Kelas
+                    </a>
                     <button onclick="window.print()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-1.5">
                         <i data-lucide="printer" class="w-4 h-4"></i> Cetak / PDF
                     </button>
                 </div>
             </div>
 
-            <!-- LEMBAR RAPOR (BISA DICETAK) -->
+            <!-- LEMBAR RAPOR -->
             <div id="areaCetak" class="glass-card rounded-2xl p-8 shadow-xl bg-white text-slate-900 space-y-6">
                 <!-- KOP & JUDUL -->
                 <div class="text-center space-y-1 pb-4 border-b-2 border-slate-800 border-print">
                     <h1 class="text-2xl font-black uppercase tracking-wide">LAPORAN HASIL BELAJAR SISWA</h1>
-                    <!-- KOP NAMA SEKOLAH DINAMIS -->
                     <p id="dispSekolah" class="text-sm font-extrabold uppercase text-slate-600 tracking-wider">
                         SD NEGERI 1 GUWA LOR
                     </p>
@@ -107,7 +105,7 @@
                     </div>
                     <div class="flex">
                         <span class="w-28 text-slate-600">Kelas</span>
-                        <span id="dispKelas" class="font-bold text-slate-900">: -</span>
+                        <span id="dispKelas" class="font-bold text-slate-900">: IV (Empat)</span>
                     </div>
                     <div class="flex">
                         <span class="w-28 text-slate-600">Jenis Kelamin</span>
@@ -127,7 +125,7 @@
                     </div>
                 </div>
 
-                <!-- TABEL NILAI MATA PELAJARAN -->
+                <!-- TABEL NILAI -->
                 <div class="space-y-2">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800">A. Nilai Akademik</h3>
                     <div class="overflow-x-auto">
@@ -142,7 +140,6 @@
                                 </tr>
                             </thead>
                             <tbody id="tabelNilaiBody" class="divide-y divide-slate-200">
-                                <!-- Diisi via JS -->
                             </tbody>
                         </table>
                     </div>
@@ -192,56 +189,9 @@
         </footer>
     </div>
 
-    <!-- MODAL POPUP EDIT PROFIL (NO PRINT) -->
-    <div id="modalProfil" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
-        <div class="glass-card bg-white w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 border border-slate-200">
-            <div class="flex justify-between items-center border-b pb-3 border-slate-200">
-                <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
-                    <i data-lucide="user-cog" class="w-5 h-5 text-indigo-600"></i> EDIT PROFIL SEKOLAH & KELAS
-                </h3>
-                <button onclick="tutupModalProfil()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
-            </div>
-            <form id="formModalProfil" onsubmit="simpanProfilModal(event)" class="space-y-3">
-                <div>
-                    <label class="block font-bold text-slate-700 text-xs mb-1">Nama Sekolah / Kop:</label>
-                    <input type="text" id="inputSekolah" required class="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold text-xs">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 text-xs mb-1">Kelas:</label>
-                        <input type="text" id="inputKelas" required class="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold text-xs">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 text-xs mb-1">Semester:</label>
-                        <select id="inputSemester" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold text-xs">
-                            <option value="1 (Ganjil)">1 (Ganjil)</option>
-                            <option value="2 (Genap)">2 (Genap)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-slate-700 text-xs mb-1">Tahun Ajaran:</label>
-                        <input type="text" id="inputTA" required class="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold text-xs">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-slate-700 text-xs mb-1">Nama Wali Kelas:</label>
-                        <input type="text" id="inputGuru" required class="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold text-xs">
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
-                    <button type="button" onclick="tutupModalProfil()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 font-bold text-xs">Batal</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- LOGIKA JAVASCRIPT -->
     <script>
         lucide.createIcons();
 
-        // 1. Data Siswa & Absensi
         let dataSiswa = JSON.parse(localStorage.getItem('dataSiswaGuru')) || [
             { id: 1, nama: "AFAN ATMA PURNAMA", jk: "Laki-Laki" },
             { id: 2, nama: "ABID FADHIL ABYAN", jk: "Laki-Laki" }
@@ -249,73 +199,27 @@
 
         let rekapAbsen = JSON.parse(localStorage.getItem('rekapAbsenGuru')) || {};
 
-        // 2. Fungsi Mengambil Data Profil & Kelas Terkoneksi
         function muatDataTerhubung() { 
             const profil = JSON.parse(localStorage.getItem('profilSekolahGuru')) || { 
                 namaSekolah: "SD NEGERI 1 GUWA LOR", 
-                kelas: "IV (Empat)",
                 tahunAjaran: "2026/2027", 
-                semester: "1 (Ganjil)", 
-                namaGuru: "Chairul Anwar, S.Pd.", 
-                nipGuru: "-" 
+                namaGuru: "Chairul Anwar, S.Pd." 
             }; 
 
             if (document.getElementById('dispSekolah')) document.getElementById('dispSekolah').innerText = profil.namaSekolah; 
-            if (document.getElementById('dispKelas')) document.getElementById('dispKelas').innerText = `: ${profil.kelas || 'IV (Empat)'}`; 
             if (document.getElementById('dispTA')) document.getElementById('dispTA').innerText = `: ${profil.tahunAjaran}`; 
-            if (document.getElementById('dispSemester')) document.getElementById('dispSemester').innerText = `: ${profil.semester}`; 
             if (document.getElementById('dispWali')) document.getElementById('dispWali').innerText = `( ${profil.namaGuru} )`; 
         }
 
-        // 3. Fungsi Kontrol Modal Profil
-        function bukaModalProfil() {
-            const profil = JSON.parse(localStorage.getItem('profilSekolahGuru')) || { 
-                namaSekolah: "SD NEGERI 1 GUWA LOR", 
-                kelas: "IV (Empat)",
-                tahunAjaran: "2026/2027", 
-                semester: "1 (Ganjil)", 
-                namaGuru: "Chairul Anwar, S.Pd." 
-            };
-            document.getElementById('inputSekolah').value = profil.namaSekolah;
-            document.getElementById('inputKelas').value = profil.kelas || "IV (Empat)";
-            document.getElementById('inputSemester').value = profil.semester || "1 (Ganjil)";
-            document.getElementById('inputTA').value = profil.tahunAjaran || "2026/2027";
-            document.getElementById('inputGuru').value = profil.namaGuru || "Chairul Anwar, S.Pd.";
-            document.getElementById('modalProfil').classList.remove('hidden');
-        }
-
-        function tutupModalProfil() {
-            document.getElementById('modalProfil').classList.add('hidden');
-        }
-
-        function simpanProfilModal(e) {
-            e.preventDefault();
-            const updated = {
-                namaSekolah: document.getElementById('inputSekolah').value,
-                kelas: document.getElementById('inputKelas').value,
-                semester: document.getElementById('inputSemester').value,
-                tahunAjaran: document.getElementById('inputTA').value,
-                namaGuru: document.getElementById('inputGuru').value,
-                nipGuru: "-"
-            };
-            localStorage.setItem('profilSekolahGuru', JSON.stringify(updated));
-            muatDataTerhubung();
-            tutupModalProfil();
-        }
-
-        // 4. Populate Pilihan Siswa
         function initSiswaSelect() {
             const select = document.getElementById('selectSiswa');
             select.innerHTML = '';
             dataSiswa.forEach(s => {
                 select.innerHTML += `<option value="${s.id}">${s.nama}</option>`;
             });
-            if (dataSiswa.length > 0) {
-                gantiSiswa();
-            }
+            if (dataSiswa.length > 0) gantiSiswa();
         }
 
-        // 5. Update Tampilan Saat Pilih Siswa
         function gantiSiswa() {
             const selectedId = document.getElementById('selectSiswa').value;
             const siswa = dataSiswa.find(s => s.id == selectedId);
@@ -324,7 +228,6 @@
                 document.getElementById('dispNama').innerText = `: ${siswa.nama}`;
                 document.getElementById('dispJK').innerText = `: ${siswa.jk || 'Laki-Laki'}`;
 
-                // Hitung Absensi Siswa
                 let sakit = 0, izin = 0, alpa = 0;
                 Object.keys(rekapAbsen).forEach(tgl => {
                     const st = rekapAbsen[tgl][siswa.id];
@@ -340,7 +243,6 @@
             renderTabelNilai();
         }
 
-        // 6. Render Nilai
         function renderTabelNilai() {
             const mapel = [
                 { nama: "Pendidikan Agama", nilai: 88, predikat: "A", ket: "Sangat Baik dalam memahami materi." },
@@ -365,7 +267,6 @@
             });
         }
 
-        // Eksekusi Otomatis Saat Dimuat
         document.addEventListener('DOMContentLoaded', () => {
             muatDataTerhubung();
             initSiswaSelect();
