@@ -651,21 +651,19 @@
       alert('Data Berhasil Diperbarui!');
     }
 function updateHeaderInfo() {
-    const sekolah = localStorage.getItem("schoolName");
-    const guru = localStorage.getItem("teacherName");
-    const motto = localStorage.getItem("mottoText");
 
-    if (sekolah) {
-        document.getElementById("schoolName").textContent = sekolah;
+    const profil = JSON.parse(localStorage.getItem('profilSekolahGuru'));
+
+    if (!profil) return;
+
+    document.getElementById("schoolName").textContent = profil.namaSekolah;
+    document.getElementById("teacherName").textContent = profil.namaGuru;
+    document.getElementById("mottoText").textContent = profil.motto;
+
+    if (profil.foto) {
+        document.getElementById("fotoProfil").src = profil.foto;
     }
 
-    if (guru) {
-        document.getElementById("teacherName").textContent = guru;
-    }
-
-    if (motto) {
-        document.getElementById("mottoText").textContent = motto;
-    }
 }
     window.addEventListener('DOMContentLoaded', async () => {
       lucide.createIcons();
