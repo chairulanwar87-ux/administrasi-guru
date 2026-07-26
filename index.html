@@ -3,15 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Administrasi Guru</title>
+  <title>Administrasi Digital Guru</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    body {
-      background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-      background-size: cover;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
     .glass-card {
       background: rgba(255, 255, 255, 0.65);
       backdrop-filter: blur(20px);
@@ -21,192 +16,73 @@
     }
   </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen">
+<body class="p-4 bg-slate-100">
 
-  <!-- PEMUTAR MUSIK BACKGROUND -->
-  <audio id="bgMusic" autoplay loop src="Bayalangu.mp3"></audio>
-
-  <div class="max-w-7xl mx-auto space-y-6">
-    
-    <!-- HEADER DASHBOARD (BERSIH & KOSONG UTK PENGGUNA BARU) -->
-    <header class="glass-card rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-4 w-full md:w-auto">
-        
-        <!-- FOTO PROFIL (Klik untuk langsung ganti/upload foto) -->
-        <div class="relative group cursor-pointer" title="Klik untuk ganti foto profil" onclick="document.getElementById('uploadFotoDirect').click()">
-          <img id="fotoProfil" src="https://via.placeholder.com/100?text=Foto" class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-white shadow-md">
-          <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-[10px] font-bold text-center p-1">
-            Ganti Foto
-          </div>
-          <input type="file" id="uploadFotoDirect" accept="image/*" class="hidden" onchange="gantiFotoDirect(event)">
-        </div>
-
-        <div>
-          <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
-          
-          <!-- DATA DEFAULT KOSONG -->
-          <div class="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-700 mt-1">
-            <span id="txtSekolah" class="text-slate-400">[Nama Sekolah]</span>
-            <span>•</span>
-            <span id="txtGuru" class="text-indigo-900">[Nama Guru]</span>
-            <span>•</span>
-            <span id="txtMotto" class="italic text-slate-500">[Motto Sekolah]</span>
-          </div>
-
-          <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
-            <span id="txtSemesterTA" class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Sem. Ganjil • 2026/2027</span>
-          </div>
-        </div>
+  <!-- HEADER BAR (SAMA PERSIS DENGAN KODE ASLI ANDA) -->
+  <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="relative group cursor-pointer" title="Klik untuk ganti foto profil" onclick="document.getElementById('uploadFoto').click()">
+        <img id="fotoProfil" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
+        <input type="file" id="uploadFoto" accept="image/*" class="hidden" onchange="gantiFoto(event)">
       </div>
 
-      <!-- TOMBOL AKSI HEADER & MUSIK -->
-      <div class="flex items-center gap-3 w-full md:w-auto justify-end flex-wrap">
-        <button id="btnMusik" onclick="toggleMusik()" class="bg-amber-500/80 hover:bg-amber-500 text-white px-3 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition">
-          <i data-lucide="volume-2" class="w-4 h-4"></i> <span id="txtMusik">Musik On</span>
-        </button>
-        <button onclick="bukaModalHeader()" class="bg-white/80 hover:bg-white text-indigo-900 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 shadow-sm transition">
-          <i data-lucide="settings" class="w-4 h-4"></i> Edit Header
-        </button>
-        <a href="profile.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md transition">
-          <i data-lucide="user" class="w-4 h-4"></i> Pengaturan Profil
-        </a>
+      <div>
+        <h1 class="text-2xl font-black theme-active-text tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 mt-1">
+          <span id="txtSekolah"></span> •
+          <span id="txtGuru"></span> •
+          <span id="txtMotto" class="italic text-slate-500"></span>
+        </div>
+        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
+          <span id="realtimeClock" class="theme-active-text font-mono font-bold">🕒 00:00:00</span>
+          <span id="realtimeDate">...</span>
+          <span id="txtSemesterTA" class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Sem. Ganjil • 2026/2027</span>
+        </div>
       </div>
-    </header>
+    </div>
 
-    <!-- MENU UTAMA DASHBOARD (LENGKAP 6 MENU) -->
-    <main class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-      
-      <!-- MENU 1 -->
-      <a href="mapel.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
-          <i data-lucide="book-open" class="w-6 h-6"></i>
-        </div>
-        <span class="font-bold text-xs text-slate-800">Mata Pelajaran</span>
-      </a>
+    <!-- TOMBOL EDIT HEADER -->
+    <div>
+      <button onclick="bukaModalHeader()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition">
+        Edit Profile / Header
+      </button>
+    </div>
+  </header>
 
-      <!-- MENU 2 -->
-      <a href="modul.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition">
-          <i data-lucide="file-text" class="w-6 h-6"></i>
-        </div>
-        <span class="font-bold text-xs text-slate-800">Modul Ajar / RPP</span>
-      </a>
-
-      <!-- MENU 3 -->
-      <a href="absensi.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
-          <i data-lucide="calendar-check" class="w-6 h-6"></i>
-        </div>
-        <span class="font-bold text-xs text-slate-800">Absensi Siswa</span>
-      </a>
-
-      <!-- MENU 4 -->
-      <a href="nilai.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition">
-          <i data-lucide="award" class="w-6 h-6"></i>
-        </div>
-        <span class="font-bold text-xs text-slate-800">Penilaian</span>
-      </a>
-
-      <!-- MENU 5 -->
-      <a href="rekap.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
-          <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
-        </div>
-        <span class="font-bold text-xs text-slate-800">Rekapitulasi</span>
-      </a>
-
-      <!-- MENU 6 -->
-      <a href="siswa.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center mb-3 group-hover:bg-rose-600 group-hover:text-white transition">
-          <i data-lucide="users" class="w-6 h-6"></i>
-        </div>
-        <span class="font-bold text-xs text-slate-800">Data Siswa</span>
-      </a>
-
-    </main>
-
-  </div>
-
-  <!-- MODAL POPUP EDIT HEADER & UPLOAD FOTO -->
+  <!-- MODAL EDIT DATA (NAMA, SEKOLAH, MOTTO & FOTO) -->
   <div id="modalHeader" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="glass-card bg-white/90 rounded-3xl p-6 w-full max-w-lg space-y-4">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="font-bold text-indigo-900">Edit Header & Foto Profil</h3>
-        <button onclick="tutupModalHeader()" class="text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="space-y-3 text-xs font-semibold text-slate-700">
-        <!-- FORM UPLOAD FOTO PROFIL -->
-        <div class="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 flex items-center gap-4">
-          <img id="previewFotoModal" src="https://via.placeholder.com/100?text=Foto" class="w-14 h-14 rounded-full object-cover border shadow-sm">
-          <div class="flex-1">
-            <label class="block mb-1 font-bold text-indigo-900">Upload Foto Profil Guru</label>
-            <input type="file" id="inputFileFoto" accept="image/*" class="text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
-          </div>
+    <div class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 shadow-xl">
+      <h3 class="font-bold text-slate-800 text-sm border-b pb-2">Edit Data Header Guru</h3>
+      
+      <div class="space-y-2 text-xs font-semibold text-slate-700">
+        <div>
+          <label class="block mb-1">Upload Foto Profil Guru</label>
+          <input type="file" id="inputFotoModal" accept="image/*" class="w-full text-xs text-slate-500 border rounded-lg p-1">
         </div>
-
         <div>
           <label class="block mb-1">Nama Sekolah</label>
-          <input type="text" id="inputNamaSekolah" placeholder="Masukkan nama sekolah..." class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="inputNamaSekolah" placeholder="Contoh: SD NEGERI 1 GUWA LOR" class="w-full px-3 py-1.5 border rounded-lg outline-none focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block mb-1">Nama Guru</label>
-          <input type="text" id="inputNamaGuru" placeholder="Masukkan nama guru..." class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+          <input type="text" id="inputNamaGuru" placeholder="Contoh: CHAIRUL ANWAR, S.Pd." class="w-full px-3 py-1.5 border rounded-lg outline-none focus:ring-1 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block mb-1">Motto</label>
-          <input type="text" id="inputMotto" placeholder="Masukkan motto..." class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block mb-1">Tahun Ajaran</label>
-            <input type="text" id="inputTA" placeholder="2026/2027" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-          <div>
-            <label class="block mb-1">Semester</label>
-            <select id="inputSem" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="Sem. Ganjil">Sem. Ganjil</option>
-              <option value="Sem. Genap">Sem. Genap</option>
-            </select>
-          </div>
+          <input type="text" id="inputMotto" placeholder="Contoh: BERGELORA" class="w-full px-3 py-1.5 border rounded-lg outline-none focus:ring-1 focus:ring-indigo-500">
         </div>
       </div>
 
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="tutupModalHeader()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
-        <button onclick="simpanHeaderModal()" class="px-4 py-2 text-xs font-bold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan Perubahan</button>
+      <div class="flex justify-end gap-2 pt-2 border-t">
+        <button onclick="tutupModalHeader()" class="px-3 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-lg">Batal</button>
+        <button onclick="simpanHeaderModal()" class="px-3 py-1.5 text-xs font-bold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan</button>
       </div>
     </div>
   </div>
 
   <script>
-    let tempFotoBase64 = "";
-
-    // KONTROL MUSIK BACKGROUND
-    function toggleMusik() {
-      const audio = document.getElementById('bgMusic');
-      const txt = document.getElementById('txtMusik');
-      if (audio.paused) {
-        audio.play();
-        txt.innerText = 'Musik On';
-      } else {
-        audio.pause();
-        txt.innerText = 'Musik Off';
-      }
-    }
-
-    document.addEventListener('click', () => {
-      const audio = document.getElementById('bgMusic');
-      if(audio.paused && audio.currentTime === 0) {
-        audio.play().catch(() => {});
-      }
-    }, { once: true });
-
-    // UPLOAD FOTO LANGSUNG DENGAN KLIK PROFIL
-    function gantiFotoDirect(e) {
+    // FUNGSI UPLOAD FOTO DARI KLIK GAMBAR
+    function gantiFoto(e) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -219,67 +95,30 @@
       }
     }
 
-    // LISTENER PREVIEW UPLOAD FOTO DALAM MODAL
-    document.getElementById('inputFileFoto').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          tempFotoBase64 = evt.target.result;
-          document.getElementById('previewFotoModal').src = tempFotoBase64;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // MUAT HEADER DENGAN PENGECEKAN DATA KOSONG
+    // MUAT DATA HEADER
     function muatHeader() {
       const dataHeader = JSON.parse(localStorage.getItem('headerGuruData')) || {};
       const fotoDisimpan = localStorage.getItem('fotoGuruURL');
 
+      // Foto profil
       if (fotoDisimpan) {
         document.getElementById('fotoProfil').src = fotoDisimpan;
       } else {
-        document.getElementById('fotoProfil').src = "https://via.placeholder.com/100?text=Foto";
+        document.getElementById('fotoProfil').src = "https://via.placeholder.com/100";
       }
 
-      if (dataHeader.sekolah) {
-        document.getElementById('txtSekolah').innerText = dataHeader.sekolah;
-        document.getElementById('txtSekolah').classList.remove('text-slate-400');
-      } else {
-        document.getElementById('txtSekolah').innerText = "[Nama Sekolah]";
-      }
-
-      if (dataHeader.namaGuru) {
-        document.getElementById('txtGuru').innerText = dataHeader.namaGuru;
-      } else {
-        document.getElementById('txtGuru').innerText = "[Nama Guru]";
-      }
-
-      if (dataHeader.motto) {
-        document.getElementById('txtMotto').innerText = `"${dataHeader.motto.replace(/^"|"$/g, '')}"`;
-      } else {
-        document.getElementById('txtMotto').innerText = "[Motto]";
-      }
-
-      if (dataHeader.sem || dataHeader.ta) {
-        document.getElementById('txtSemesterTA').innerText = `${dataHeader.sem || 'Sem. Ganjil'} • ${dataHeader.ta || '2026/2027'}`;
-      }
+      // Teks Nama Sekolah, Nama Guru, Motto
+      document.getElementById('txtSekolah').innerText = dataHeader.sekolah || "[Nama Sekolah]";
+      document.getElementById('txtGuru').innerText = dataHeader.namaGuru || "[Nama Guru]";
+      document.getElementById('txtMotto').innerText = dataHeader.motto ? `"${dataHeader.motto}"` : "[Motto]";
     }
 
+    // MODAL CONTROL
     function bukaModalHeader() {
       const data = JSON.parse(localStorage.getItem('headerGuruData')) || {};
-      const fotoDisimpan = localStorage.getItem('fotoGuruURL');
-
       document.getElementById('inputNamaSekolah').value = data.sekolah || "";
       document.getElementById('inputNamaGuru').value = data.namaGuru || "";
-      document.getElementById('inputMotto').value = data.motto ? data.motto.replace(/^"|"$/g, '') : "";
-      document.getElementById('inputTA').value = data.ta || "2026/2027";
-      document.getElementById('inputSem').value = data.sem || "Sem. Ganjil";
-      
-      document.getElementById('previewFotoModal').src = fotoDisimpan || "https://via.placeholder.com/100?text=Foto";
-      tempFotoBase64 = ""; // Reset temp
-
+      document.getElementById('inputMotto').value = data.motto || "";
       document.getElementById('modalHeader').classList.remove('hidden');
     }
 
@@ -288,28 +127,44 @@
     }
 
     function simpanHeaderModal() {
-      const dataBaru = {
-        sekolah: document.getElementById('inputNamaSekolah').value.trim(),
-        namaGuru: document.getElementById('inputNamaGuru').value.trim(),
-        motto: document.getElementById('inputMotto').value.trim(),
-        ta: document.getElementById('inputTA').value.trim(),
-        sem: document.getElementById('inputSem').value
+      const fileFoto = document.getElementById('inputFotoModal').files[0];
+      
+      const simpanTeks = () => {
+        const dataBaru = {
+          sekolah: document.getElementById('inputNamaSekolah').value.trim(),
+          namaGuru: document.getElementById('inputNamaGuru').value.trim(),
+          motto: document.getElementById('inputMotto').value.trim()
+        };
+        localStorage.setItem('headerGuruData', JSON.stringify(dataBaru));
+        muatHeader();
+        tutupModalHeader();
       };
 
-      // Jika pengguna memilih foto baru dari modal
-      if (tempFotoBase64) {
-        localStorage.setItem('fotoGuruURL', tempFotoBase64);
+      if (fileFoto) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          localStorage.setItem('fotoGuruURL', evt.target.result);
+          simpanTeks();
+        };
+        reader.readAsDataURL(fileFoto);
+      } else {
+        simpanTeks();
       }
+    }
 
-      localStorage.setItem('headerGuruData', JSON.stringify(dataBaru));
-
-      muatHeader();
-      tutupModalHeader();
+    // JAM DIGITAL REALTIME
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      const dateStr = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+      if(document.getElementById('realtimeClock')) document.getElementById('realtimeClock').innerText = `🕒 ${timeStr}`;
+      if(document.getElementById('realtimeDate')) document.getElementById('realtimeDate').innerText = dateStr;
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
       muatHeader();
+      setInterval(updateClock, 1000);
+      updateClock();
     });
   </script>
 </body>
