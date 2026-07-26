@@ -13,9 +13,9 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.7);
       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
     }
@@ -48,7 +48,7 @@
           
           <div>
             <label class="block mb-1.5 font-bold">Nama Lengkap Guru (dengan Gelar)</label>
-            <input type="text" id="profNamaGuru" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
+            <input type="text" id="profNamaGuru" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500" required>
           </div>
 
           <div>
@@ -58,7 +58,7 @@
 
           <div>
             <label class="block mb-1.5 font-bold">Nama Sekolah</label>
-            <input type="text" id="profSekolah" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
+            <input type="text" id="profSekolah" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500" required>
           </div>
 
           <div>
@@ -68,7 +68,7 @@
 
           <div>
             <label class="block mb-1.5 font-bold">Motto Guru / Sekolah</label>
-            <input type="text" id="profMotto" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
+            <input type="text" id="profMotto" placeholder="Contoh: BERGERAK" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
           <div>
@@ -89,15 +89,14 @@
   </div>
 
   <script>
-    // MEMUAT DATA SAAT HALAMAN DIBUKA
     function muatProfil() {
-      // Membaca kunci localStorage 'headerGuruData' yang sama dengan index.html
+      // Ambil data profil tersimpan
       const data = JSON.parse(localStorage.getItem('headerGuruData')) || {
         foto: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
         sekolah: "SD NEGERI 1 GUWA LOR",
         namaGuru: "CHAIRUL ANWAR, S.Pd.",
         nip: "198007082022211005",
-        motto: '"BERGELORA"',
+        motto: "BERGERAK",
         ta: "2026/2027",
         sem: "Sem. Ganjil"
       };
@@ -107,28 +106,20 @@
       document.getElementById('profSekolah').value = data.sekolah || '';
       document.getElementById('profTA').value = data.ta || '';
       
-      // Bersihkan tanda petik saat ditampilkan di input form agar mudah diedit
-      let mottoClean = data.motto ? data.motto.replace(/^"|"$/g, '') : '';
+      // Bersihkan tanda petik agar mudah diedit
+      let mottoClean = (data.motto || '').replace(/^"|"$/g, '');
       document.getElementById('profMotto').value = mottoClean;
-      
       document.getElementById('profFoto').value = data.foto || '';
     }
 
-    // MENYIMPAN DATA KE LOCALSTORAGE
     function simpanProfil(e) {
       e.preventDefault();
 
       const dataLama = JSON.parse(localStorage.getItem('headerGuruData')) || {};
-
       let mottoInput = document.getElementById('profMotto').value.trim();
-      
-      // Memberikan tanda petik otomatis pada Motto
-      if (mottoInput && !mottoInput.startsWith('"')) {
-        mottoInput = `"${mottoInput}"`;
-      }
 
       const dataBaru = {
-        foto: document.getElementById('profFoto').value || dataLama.foto,
+        foto: document.getElementById('profFoto').value || dataLama.foto || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
         sekolah: document.getElementById('profSekolah').value,
         namaGuru: document.getElementById('profNamaGuru').value,
         nip: document.getElementById('profNip').value,
@@ -137,11 +128,12 @@
         sem: dataLama.sem || "Sem. Ganjil"
       };
 
-      // Simpan ke kunci utama yang dibaca oleh Header Dashboard
+      // Simpan data secara menyeluruh
       localStorage.setItem('headerGuruData', JSON.stringify(dataBaru));
       localStorage.setItem('fotoGuruURL', dataBaru.foto);
 
-      alert('✅ Profil berhasil diperbarui! Silakan klik KEMBALI untuk melihat perubahan di Header Dashboard.');
+      alert('✅ Profil berhasil diperbarui!');
+      window.location.href = 'index.html';
     }
 
     window.addEventListener('DOMContentLoaded', () => {
