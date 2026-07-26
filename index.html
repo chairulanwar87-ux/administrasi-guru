@@ -28,15 +28,15 @@
 
   <div class="max-w-7xl mx-auto space-y-6">
     
-    <!-- HEADER DASHBOARD -->
+    <!-- HEADER DASHBOARD (SUDAH NETRAL) -->
     <header class="glass-card rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-4 w-full md:w-auto">
         <img id="fotoProfil" src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200" alt="Foto Guru" class="w-20 h-20 rounded-2xl object-cover border-2 border-white shadow-md">
         <div>
-          <h1 id="txtSekolah" class="text-xl md:text-2xl font-black text-slate-800 uppercase">SD NEGERI 1 GUWA LOR</h1>
-          <p id="txtGuru" class="text-sm font-bold text-indigo-900">CHAIRUL ANWAR, S.Pd.</p>
+          <h1 id="txtSekolah" class="text-xl md:text-2xl font-black text-slate-800 uppercase">NAMA SEKOLAH</h1>
+          <p id="txtGuru" class="text-sm font-bold text-indigo-900">NAMA GURU, S.Pd.</p>
           <div class="flex items-center gap-2 mt-1 text-xs">
-            <span id="txtMotto" class="italic text-slate-600 font-semibold">"BERGERAK"</span>
+            <span id="txtMotto" class="italic text-slate-600 font-semibold">"MOTTO SEKOLAH"</span>
             <span class="text-slate-400">•</span>
             <span id="txtSemesterTA" class="font-bold text-slate-700">Sem. Ganjil • 2026/2027</span>
           </div>
@@ -57,10 +57,10 @@
       </div>
     </header>
 
-    <!-- MENU UTAMA DASHBOARD (LENGKAP SEMUA KOTAK MENU) -->
+    <!-- MENU UTAMA DASHBOARD (LENGKAP 6 MENU) -->
     <main class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       
-      <!-- MENU 1: MATA PELAJARAN -->
+      <!-- MENU 1 -->
       <a href="mapel.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
         <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
           <i data-lucide="book-open" class="w-6 h-6"></i>
@@ -68,7 +68,7 @@
         <span class="font-bold text-xs text-slate-800">Mata Pelajaran</span>
       </a>
 
-      <!-- MENU 2: MODUL AJAR / RPP -->
+      <!-- MENU 2 -->
       <a href="modul.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
         <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition">
           <i data-lucide="file-text" class="w-6 h-6"></i>
@@ -76,7 +76,7 @@
         <span class="font-bold text-xs text-slate-800">Modul Ajar / RPP</span>
       </a>
 
-      <!-- MENU 3: ABSENSI SISWA -->
+      <!-- MENU 3 -->
       <a href="absensi.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
         <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
           <i data-lucide="calendar-check" class="w-6 h-6"></i>
@@ -84,7 +84,7 @@
         <span class="font-bold text-xs text-slate-800">Absensi Siswa</span>
       </a>
 
-      <!-- MENU 4: PENILAIAN -->
+      <!-- MENU 4 -->
       <a href="nilai.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
         <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition">
           <i data-lucide="award" class="w-6 h-6"></i>
@@ -92,7 +92,7 @@
         <span class="font-bold text-xs text-slate-800">Penilaian</span>
       </a>
 
-      <!-- MENU 5: REKAPITULASI -->
+      <!-- MENU 5 -->
       <a href="rekap.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
         <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
           <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
@@ -100,7 +100,7 @@
         <span class="font-bold text-xs text-slate-800">Rekapitulasi</span>
       </a>
 
-      <!-- MENU 6: DATA SISWA -->
+      <!-- MENU 6 -->
       <a href="siswa.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
         <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center mb-3 group-hover:bg-rose-600 group-hover:text-white transition">
           <i data-lucide="users" class="w-6 h-6"></i>
@@ -182,18 +182,18 @@
       }
     }, { once: true });
 
-    // SINKRONISASI DATA HEADER PENGGUNA
+    // SINKRONISASI DATA HEADER PENGGUNA (DEFAULT NETRAL)
     function muatHeader() {
       const dataHeader = JSON.parse(localStorage.getItem('headerGuruData')) || {
         foto: localStorage.getItem('fotoGuruURL') || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
-        sekolah: "SD NEGERI 1 GUWA LOR",
-        namaGuru: "CHAIRUL ANWAR, S.Pd.",
-        motto: "BERGERAK",
+        sekolah: "NAMA SEKOLAH",
+        namaGuru: "NAMA GURU, S.Pd.",
+        motto: "MOTTO SEKOLAH",
         ta: "2026/2027",
         sem: "Sem. Ganjil"
       };
 
-      let displayMotto = (dataHeader.motto || "BERGERAK").replace(/^"|"$/g, '');
+      let displayMotto = (dataHeader.motto || "MOTTO SEKOLAH").replace(/^"|"$/g, '');
 
       if (document.getElementById('fotoProfil')) document.getElementById('fotoProfil').src = dataHeader.foto;
       if (document.getElementById('txtSekolah')) document.getElementById('txtSekolah').innerText = dataHeader.sekolah;
@@ -206,9 +206,9 @@
 
     function bukaModalHeader() {
       const data = JSON.parse(localStorage.getItem('headerGuruData')) || {};
-      document.getElementById('inputNamaSekolah').value = data.sekolah || "SD NEGERI 1 GUWA LOR";
-      document.getElementById('inputNamaGuru').value = data.namaGuru || "CHAIRUL ANWAR, S.Pd.";
-      document.getElementById('inputMotto').value = (data.motto || "BERGERAK").replace(/^"|"$/g, '');
+      document.getElementById('inputNamaSekolah').value = data.sekolah || "NAMA SEKOLAH";
+      document.getElementById('inputNamaGuru').value = data.namaGuru || "NAMA GURU, S.Pd.";
+      document.getElementById('inputMotto').value = (data.motto || "MOTTO SEKOLAH").replace(/^"|"$/g, '');
       document.getElementById('inputTA').value = data.ta || "2026/2027";
       document.getElementById('inputSem').value = data.sem || "Sem. Ganjil";
       document.getElementById('inputFoto').value = data.foto || "";
