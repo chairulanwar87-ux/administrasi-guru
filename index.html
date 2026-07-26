@@ -3,246 +3,713 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Administrasi Guru</title>
+  <title>Administrasi Digital Guru V2</title>
+  
+  <!-- CDN Tailwind CSS, Lucide Icons & Dexie DB -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+
   <style>
     body {
       background: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
       background-size: cover;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
     }
+
+    /* Glassmorphism Classes */
     .glass-card {
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      background: var(--glass-bg, rgba(255, 255, 255, 0.45));
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.6));
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+      transition: all 0.3s ease;
     }
+
+    .glass-inner {
+      background: var(--inner-bg, rgba(255, 255, 255, 0.5));
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--inner-border, rgba(255, 255, 255, 0.7));
+    }
+
+    .glass-item {
+      background: var(--item-bg, rgba(255, 255, 255, 0.75));
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--item-border, rgba(255, 255, 255, 0.9));
+    }
+
+    .glass-nav {
+      background: var(--nav-bg, rgba(255, 255, 255, 0.65));
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.8));
+    }
+
+    /* Dark Mode Overrides */
+    body.dark-mode {
+      --glass-bg: rgba(15, 23, 42, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --inner-bg: rgba(30, 41, 59, 0.7);
+      --inner-border: rgba(255, 255, 255, 0.1);
+      --item-bg: rgba(51, 65, 85, 0.8);
+      --item-border: rgba(255, 255, 255, 0.15);
+      --nav-bg: rgba(30, 41, 59, 0.8);
+      --nav-border: rgba(255, 255, 255, 0.1);
+      color: #f1f5f9;
+    }
+
+    body.dark-mode .text-slate-800, body.dark-mode .text-slate-700 { color: #f8fafc; }
+    body.dark-mode .text-slate-600, body.dark-mode .text-slate-500 { color: #cbd5e1; }
+    body.dark-mode .bg-white\/80, body.dark-mode .bg-white\/90 { background-color: rgba(30, 41, 59, 0.85); color: #fff; }
+
+    /* Custom Themes */
+    body.theme-blue { --primary-color: #2563eb; }
+    body.theme-emerald { --primary-color: #059669; }
+    body.theme-purple { --primary-color: #7c3aed; }
+    body.theme-amber { --primary-color: #d97706; }
+
+    .theme-active-bg { background-color: var(--primary-color, #2563eb) !important; }
+    .theme-active-text { color: var(--primary-color, #2563eb) !important; }
   </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen">
+<body id="appBody" class="p-3 md:p-5 min-h-screen text-slate-800 theme-blue">
 
-  <!-- PEMUTAR MUSIK BACKGROUND -->
-  <audio id="bgMusic" autoplay loop src="Bayalangu.mp3"></audio>
+  <!-- HEADER BAR -->
+  <header class="glass-card rounded-3xl p-4 mb-4 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="relative group cursor-pointer" title="Klik untuk ganti foto profil" onclick="document.getElementById('uploadFoto').click()">
+        <img id="fotoProfil" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
+        <input type="file" id="uploadFoto" accept="image/*" class="hidden" onchange="gantiFoto(event)">
+      </div>
 
-  <div class="max-w-7xl mx-auto space-y-6">
+      <div>
+        <h1 class="text-2xl font-black theme-active-text tracking-tight leading-none uppercase">ADMINISTRASI DIGITAL GURU</h1>
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 mt-1">
+          <span id="txtSekolah">SD NEGERI 1 GUWA LOR</span> • 
+          <span id="txtGuru">CHAIRUL ANWAR, S.Pd</span> • 
+          <span class="italic text-slate-500">"BERGELORA"</span>
+        </div>
+        <div class="flex items-center gap-2 text-[11px] font-semibold text-slate-600 mt-1">
+          <span id="realtimeClock" class="theme-active-text font-mono font-bold">🕒 00:00:00</span>
+          <span id="realtimeDate">...</span>
+          <span class="bg-blue-500/20 text-blue-700 px-2 py-0.5 rounded-md text-[10px] font-bold">Sem. Ganjil • 2026/2027</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-end gap-2">
+      <div class="flex items-center gap-2">
+        <select id="selectKelas" onchange="gantiKelas(this.value)" class="bg-white/80 text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm outline-none cursor-pointer">
+          <option value="Kelas 1">Kelas 1</option>
+          <option value="Kelas 2">Kelas 2</option>
+          <option value="Kelas 3">Kelas 3</option>
+          <option value="Kelas 4" selected>Kelas 4</option>
+          <option value="Kelas 5">Kelas 5</option>
+          <option value="Kelas 6">Kelas 6</option>
+          <option value="PAI">Mapel PAI</option>
+          <option value="PJOK">Mapel PJOK</option>
+        </select>
+
+        <button onclick="refreshData()" title="Muat Ulang Data" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="rotate-cw" class="w-4 h-4"></i></button>
+        <button onclick="toggleLock()" title="Kunci Aplikasi" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i id="iconLock" data-lucide="lock" class="w-4 h-4"></i></button>
+        <button onclick="exportDataJSON()" title="Backup Data" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="download" class="w-4 h-4"></i></button>
+
+        <div class="relative group">
+          <button title="Pilih Tema Warna" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="palette" class="w-4 h-4"></i></button>
+          <div class="absolute right-0 mt-1 hidden group-hover:flex bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-xl border border-slate-200 gap-2 z-50">
+            <button onclick="setThemeColor('blue')" class="w-6 h-6 rounded-full bg-blue-600 border border-white"></button>
+            <button onclick="setThemeColor('emerald')" class="w-6 h-6 rounded-full bg-emerald-600 border border-white"></button>
+            <button onclick="setThemeColor('purple')" class="w-6 h-6 rounded-full bg-purple-600 border border-white"></button>
+            <button onclick="setThemeColor('amber')" class="w-6 h-6 rounded-full bg-amber-600 border border-white"></button>
+          </div>
+        </div>
+
+        <div class="bg-white/80 px-2 py-1 rounded-xl flex items-center gap-1 border border-slate-200">
+          <span class="text-xs" id="modeIcon">☀️</span>
+          <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)" class="toggle accent-blue-600 cursor-pointer">
+        </div>
+
+        <button onclick="toggleFullScreen()" title="Layar Penuh" class="p-2 bg-white/80 rounded-xl hover:bg-white shadow-sm border border-slate-200"><i data-lucide="maximize" class="w-4 h-4"></i></button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="bg-white/80 px-3 py-1 rounded-xl border border-slate-200 text-[11px] flex items-center gap-2">
+          <span>🔍 Zoom</span>
+          <input type="range" min="80" max="120" value="100" oninput="changeZoom(this.value)" class="w-20 accent-blue-600">
+          <span id="zoomVal" class="font-bold">100%</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="flex items-center gap-2 overflow-x-auto pb-2 mb-4 no-scrollbar">
+    <a href="index.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl theme-active-bg text-white font-bold text-xs shadow-md whitespace-nowrap">
+      <i data-lucide="layout-dashboard" class="w-4 h-4"></i> DASHBOARD
+    </a>
+    <a href="absensi.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="calendar" class="w-4 h-4"></i> ABSEN HARIAN
+    </a>
+    <a href="profile.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="user" class="w-4 h-4"></i> PROFILE
+    </a>
+    <a href="mapel.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="book-open" class="w-4 h-4"></i> MAPEL
+    </a>
+    <a href="siswa.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="users" class="w-4 h-4"></i> DATA SISWA
+    </a>
+    <a href="nilai.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="star" class="w-4 h-4"></i> NILAI SISWA
+    </a>
+    <a href="rekap.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="clipboard-list" class="w-4 h-4"></i> REKAP ABSEN
+    </a>
+    <a href="rapor.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="printer" class="w-4 h-4"></i> CETAK
+    </a>
+    <a href="modul.html" class="flex items-center gap-2 px-5 py-2.5 rounded-2xl glass-nav hover:bg-white text-slate-700 font-bold text-xs shadow-sm whitespace-nowrap">
+      <i data-lucide="folder" class="w-4 h-4"></i> RPP / MODUL
+    </a>
+  </nav>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="glass-card rounded-3xl p-6 space-y-6">
     
-    <!-- HEADER DASHBOARD (SUDAH NETRAL) -->
-    <header class="glass-card rounded-3xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-4 w-full md:w-auto">
-        <img id="fotoProfil" src="https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200" alt="Foto Guru" class="w-20 h-20 rounded-2xl object-cover border-2 border-white shadow-md">
-        <div>
-          <h1 id="txtSekolah" class="text-xl md:text-2xl font-black text-slate-800 uppercase">NAMA SEKOLAH</h1>
-          <p id="txtGuru" class="text-sm font-bold text-indigo-900">NAMA GURU, S.Pd.</p>
-          <div class="flex items-center gap-2 mt-1 text-xs">
-            <span id="txtMotto" class="italic text-slate-600 font-semibold">"MOTTO SEKOLAH"</span>
-            <span class="text-slate-400">•</span>
-            <span id="txtSemesterTA" class="font-bold text-slate-700">Sem. Ganjil • 2026/2027</span>
-          </div>
+    <!-- SECTION 1: OVERVIEW & STATS -->
+    <div>
+      <div class="flex items-center gap-2 mb-5">
+        <i data-lucide="layers" class="w-6 h-6 theme-active-text"></i>
+        <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase">OVERVIEW DASHBOARD</h2>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-indigo-500 text-white p-3.5 rounded-2xl text-center shadow-md hover:scale-105 transition">
+          <i data-lucide="users" class="w-5 h-5 mx-auto mb-1 opacity-90"></i>
+          <h3 id="statTotal" class="text-3xl font-black leading-none">0</h3>
+          <p class="text-[9px] font-bold tracking-wider uppercase opacity-80 mt-1">TOTAL SISWA</p>
+        </div>
+
+        <div class="bg-emerald-500 text-white p-3.5 rounded-2xl text-center shadow-md hover:scale-105 transition">
+          <i data-lucide="user" class="w-5 h-5 mx-auto mb-1 opacity-90"></i>
+          <h3 id="statLaki" class="text-3xl font-black leading-none">0</h3>
+          <p class="text-[9px] font-bold tracking-wider uppercase opacity-80 mt-1">LAKI-LAKI</p>
+        </div>
+
+        <div class="bg-rose-500 text-white p-3.5 rounded-2xl text-center shadow-md hover:scale-105 transition">
+          <i data-lucide="user-check" class="w-5 h-5 mx-auto mb-1 opacity-90"></i>
+          <h3 id="statPerempuan" class="text-3xl font-black leading-none">0</h3>
+          <p class="text-[9px] font-bold tracking-wider uppercase opacity-80 mt-1">PEREMPUAN</p>
+        </div>
+
+        <div class="bg-amber-400 text-white p-3.5 rounded-2xl text-center shadow-md hover:scale-105 transition">
+          <i data-lucide="plus-square" class="w-5 h-5 mx-auto mb-1 opacity-90"></i>
+          <h3 id="statSakit" class="text-3xl font-black leading-none">0</h3>
+          <p class="text-[9px] font-bold tracking-wider uppercase opacity-80 mt-1">SAKIT</p>
+        </div>
+
+        <div class="bg-sky-400 text-white p-3.5 rounded-2xl text-center shadow-md hover:scale-105 transition">
+          <i data-lucide="mail" class="w-5 h-5 mx-auto mb-1 opacity-90"></i>
+          <h3 id="statIzin" class="text-3xl font-black leading-none">0</h3>
+          <p class="text-[9px] font-bold tracking-wider uppercase opacity-80 mt-1">IZIN</p>
+        </div>
+
+        <div class="bg-red-400 text-white p-3.5 rounded-2xl text-center shadow-md hover:scale-105 transition">
+          <i data-lucide="x-circle" class="w-5 h-5 mx-auto mb-1 opacity-90"></i>
+          <h3 id="statAlpha" class="text-3xl font-black leading-none">0</h3>
+          <p class="text-[9px] font-bold tracking-wider uppercase opacity-80 mt-1">ALPA</p>
         </div>
       </div>
+    </div>
 
-      <!-- TOMBOL AKSI HEADER & MUSIK -->
-      <div class="flex items-center gap-3 w-full md:w-auto justify-end flex-wrap">
-        <button id="btnMusik" onclick="toggleMusik()" class="bg-amber-500/80 hover:bg-amber-500 text-white px-3 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition">
-          <i data-lucide="volume-2" class="w-4 h-4"></i> <span id="txtMusik">Musik On</span>
-        </button>
-        <button onclick="bukaModalHeader()" class="bg-white/80 hover:bg-white text-indigo-900 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 shadow-sm transition">
-          <i data-lucide="settings" class="w-4 h-4"></i> Edit Header
-        </button>
-        <a href="profile.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-md transition">
-          <i data-lucide="user" class="w-4 h-4"></i> Pengaturan Profil
-        </a>
-      </div>
-    </header>
-
-    <!-- MENU UTAMA DASHBOARD (LENGKAP 6 MENU) -->
-    <main class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    <!-- SECTION 2: DEVELOPER & PERINGKAT -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       
-      <!-- MENU 1 -->
-      <a href="mapel.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
-          <i data-lucide="book-open" class="w-6 h-6"></i>
+      <!-- KIRI: TENTANG DEVELOPER -->
+      <div class="glass-inner rounded-3xl p-5 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="info" class="w-5 h-5 theme-active-text"></i>
+            <h3 class="font-black text-slate-800 text-base uppercase">Tentang Developer</h3>
+          </div>
+
+          <p class="text-xs text-slate-600 leading-relaxed font-medium mb-4">
+            Aplikasi ini dikembangkan oleh <span class="font-extrabold text-sky-600">CHAIRUL ANWAR, S.Pd</span> sebagai project inovasi pendidikan 
+            <span class="font-extrabold text-amber-500">"INOVASI WONG BLANGU"</span> semoga bermanfaat bagi rekan-rekan guru.
+          </p>
+
+          <!-- WIDGET MOTIVASI & SISTEM -->
+          <div class="glass-item p-3.5 rounded-2xl mb-5 space-y-2 border border-white/60">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                💡 Motivasi Hari Ini
+              </span>
+              <span class="text-[10px] font-semibold text-slate-400">v2.4.0 • System Ready</span>
+            </div>
+            <p class="text-xs italic text-slate-700 font-medium leading-normal">
+              "Mengajar bukan sekadar mentransfer ilmu, tapi menyalakan api rasa ingin tahu dan membentuk karakter manusia."
+            </p>
+          </div>
         </div>
-        <span class="font-bold text-xs text-slate-800">Mata Pelajaran</span>
-      </a>
 
-      <!-- MENU 2 -->
-      <a href="modul.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition">
-          <i data-lucide="file-text" class="w-6 h-6"></i>
+        <!-- 4 ACTION BUTTONS -->
+        <div class="grid grid-cols-2 gap-3 relative">
+          <a href="https://www.youtube.com/@caedukasi763" target="_blank" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
+            <i data-lucide="youtube" class="w-4 h-4"></i> YOUTUBE
+          </a>
+
+          <a href="https://www.tiktok.com/@mr_ca25" target="_blank" class="bg-slate-900 hover:bg-black text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
+            <i data-lucide="video" class="w-4 h-4"></i> TIKTOK
+          </a>
+
+          <a href="https://saweria.co/chairulanwar87" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
+            <i data-lucide="heart" class="w-4 h-4"></i> DONASI
+          </a>
+
+          <a href="https://wa.me/6285158812938" target="_blank" class="bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
+            <i data-lucide="message-circle" class="w-4 h-4"></i> WHATSAPP
+          </a>
         </div>
-        <span class="font-bold text-xs text-slate-800">Modul Ajar / RPP</span>
-      </a>
+      </div>
 
-      <!-- MENU 3 -->
-      <a href="absensi.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
-          <i data-lucide="calendar-check" class="w-6 h-6"></i>
+      <!-- KANAN: TOP 5 PERINGKAT KELAS -->
+      <div class="glass-inner rounded-3xl p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-xl">🏆</span>
+          <h3 class="font-black text-slate-800 text-base uppercase">Top 5 Peringkat Kelas</h3>
         </div>
-        <span class="font-bold text-xs text-slate-800">Absensi Siswa</span>
-      </a>
 
-      <!-- MENU 4 -->
-      <a href="nilai.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition">
-          <i data-lucide="award" class="w-6 h-6"></i>
+        <div id="topRankContainer" class="space-y-2.5">
+          <p class="text-xs text-slate-500 italic text-center py-4">Memuat peringkat siswa...</p>
         </div>
-        <span class="font-bold text-xs text-slate-800">Penilaian</span>
-      </a>
+      </div>
 
-      <!-- MENU 5 -->
-      <a href="rekap.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
-          <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+    </div>
+
+    <!-- SECTION 3: JADWAL MENGAJAR -->
+    <div class="mt-8">
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="calendar-days" class="w-6 h-6 text-purple-600"></i>
+          <h2 class="text-xl font-black text-slate-800 tracking-wide uppercase">Jadwal Mengajar</h2>
+          <span id="badgeKelasJadwal" class="bg-purple-200/80 text-purple-800 text-xs font-extrabold px-3 py-1 rounded-full">
+            Kelas 4
+          </span>
         </div>
-        <span class="font-bold text-xs text-slate-800">Rekapitulasi</span>
-      </a>
-
-      <!-- MENU 6 -->
-      <a href="siswa.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
-        <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center mb-3 group-hover:bg-rose-600 group-hover:text-white transition">
-          <i data-lucide="users" class="w-6 h-6"></i>
-        </div>
-        <span class="font-bold text-xs text-slate-800">Data Siswa</span>
-      </a>
-
-    </main>
-
-  </div>
-
-  <!-- MODAL POPUP EDIT HEADER -->
-  <div id="modalHeader" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="glass-card bg-white/90 rounded-3xl p-6 w-full max-w-lg space-y-4">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="font-bold text-indigo-900">Edit Header Dashboard</h3>
-        <button onclick="tutupModalHeader()" class="text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-5 h-5"></i>
+        
+        <button id="btnTambahJadwal" onclick="bukaModalJadwal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer z-10">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Jadwal
         </button>
       </div>
 
-      <div class="space-y-3 text-xs font-semibold text-slate-700">
+      <div id="gridJadwalContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Otomatis Diisi oleh JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL FORM TAMBAH JADWAL -->
+  <div id="modalJadwal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[999] p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-slate-800">Tambah Jadwal Mengajar</h3>
+        <button onclick="tutupModalJadwal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
+      </div>
+      
+      <div class="space-y-3 text-sm">
         <div>
-          <label class="block mb-1">Nama Sekolah</label>
-          <input type="text" id="inputNamaSekolah" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Hari</label>
+          <select id="inputHari" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-purple-500">
+            <option value="SENIN">SENIN</option>
+            <option value="SELASA">SELASA</option>
+            <option value="RABU">RABU</option>
+            <option value="KAMIS">KAMIS</option>
+            <option value="JUMAT">JUMAT</option>
+            <option value="SABTU">SABTU</option>
+          </select>
         </div>
+
         <div>
-          <label class="block mb-1">Nama Guru</label>
-          <input type="text" id="inputNamaGuru" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Jam Pelajaran</label>
+          <input type="text" id="inputJam" placeholder="Contoh: 07:30 - 09:00" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-purple-500" />
         </div>
+
         <div>
-          <label class="block mb-1">Motto</label>
-          <input type="text" id="inputMotto" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Mata Pelajaran / Kegiatan</label>
+          <input type="text" id="inputMapel" placeholder="Contoh: Matematika" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-purple-500" />
         </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block mb-1">Tahun Ajaran</label>
-            <input type="text" id="inputTA" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-          <div>
-            <label class="block mb-1">Semester</label>
-            <select id="inputSem" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="Sem. Ganjil">Sem. Ganjil</option>
-              <option value="Sem. Genap">Sem. Genap</option>
-            </select>
-          </div>
-        </div>
+
         <div>
-          <label class="block mb-1">URL Foto Profil</label>
-          <input type="text" id="inputFoto" class="w-full px-3 py-2 rounded-lg border bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Nama Guru</label>
+          <input type="text" id="inputGuru" placeholder="Contoh: CHAIRUL ANWAR, S.Pd" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-purple-500" />
         </div>
       </div>
 
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="tutupModalHeader()" class="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
-        <button onclick="simpanHeaderModal()" class="px-4 py-2 text-xs font-bold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Simpan Perubahan</button>
+      <div class="flex justify-end gap-2 mt-6">
+        <button onclick="tutupModalJadwal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg font-semibold hover:bg-slate-200">Batal</button>
+        <button onclick="simpanJadwalBaru()" class="px-4 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700">Simpan</button>
       </div>
     </div>
   </div>
 
+  <!-- SCRIPT LOGIKA APLIKASI -->
   <script>
-    // KONTROL MUSIK BACKGROUND
-    function toggleMusik() {
-      const audio = document.getElementById('bgMusic');
-      const txt = document.getElementById('txtMusik');
-      if (audio.paused) {
-        audio.play();
-        txt.innerText = 'Musik On';
-      } else {
-        audio.pause();
-        txt.innerText = 'Musik Off';
+    const db = new Dexie('AdminGuruDB');
+    db.version(2).stores({
+      siswa: '++id, nama, gender, kelas',
+      absensi: '++id, siswaId, tanggal, status',
+      nilai: '++id, siswaId, mapel, nilai',
+      jadwal: '++id, hari, jam, mapel, guru, kelas'
+    });
+
+    async function seedDatabase() {
+      const count = await db.siswa.count();
+      if (count === 0) {
+        await db.siswa.bulkAdd([
+          { nama: 'AFIF FACHRUDIN', gender: 'L', kelas: 'Kelas 4' },
+          { nama: 'AHMADSAFI\'I', gender: 'L', kelas: 'Kelas 4' },
+          { nama: 'ABID FADHIL ABYAN', gender: 'L', kelas: 'Kelas 4' },
+          { nama: 'AHMADFERDIANSYAH', gender: 'L', kelas: 'Kelas 4' },
+          { nama: 'AFAN ATMA PURNAMA', gender: 'L', kelas: 'Kelas 4' },
+          { nama: 'SITI NURHALIZA', gender: 'P', kelas: 'Kelas 4' },
+          { nama: 'DEWI ANGGRAENI', gender: 'P', kelas: 'Kelas 4' }
+        ]);
+
+        await db.nilai.bulkAdd([
+          { siswaId: 1, mapel: 'Matematika', nilai: 85 },
+          { siswaId: 1, mapel: 'IPA', nilai: 82 },
+          { siswaId: 2, mapel: 'Matematika', nilai: 80 },
+          { siswaId: 2, mapel: 'IPA', nilai: 83 }
+        ]);
+
+        await db.absensi.bulkAdd([
+          { siswaId: 1, tanggal: '2026-07-24', status: 'S' },
+          { siswaId: 2, tanggal: '2026-07-24', status: 'S' }
+        ]);
+      }
+
+      const countJadwal = await db.jadwal.count();
+      if (countJadwal === 0) {
+        await db.jadwal.bulkAdd([
+          { hari: 'SENIN', jam: '07:35 - 09:05', mapel: 'PJOK', guru: 'MOH. SODIKIN, S.PD', kelas: 'Kelas 4' },
+          { hari: 'SENIN', jam: '07:45 - 08:07', mapel: '🆔 Upacara', guru: 'CHAIRUL ANWAR, S.PD', kelas: 'Kelas 4' },
+          { hari: 'SENIN', jam: '09:45 - 10:07', mapel: '☕ Istirahat', guru: 'CHAIRUL ANWAR, S.PD', kelas: 'Kelas 4' },
+          { hari: 'SENIN', jam: '10:10 - 12:02', mapel: 'Matematika', guru: 'CHAIRUL ANWAR, S.PD', kelas: 'Kelas 4' },
+          { hari: 'SENIN', jam: '12:10 - 13:20', mapel: 'Seni Budaya dan Budi Pekerti', guru: 'CHAIRUL ANWAR, S.PD', kelas: 'Kelas 4' },
+          { hari: 'SABTU', jam: '07:00 - 11:30', mapel: 'Korikuler / Ekstrakurikuler', guru: 'CHAIRUL ANWAR, S.PD', kelas: 'Kelas 4' }
+        ]);
       }
     }
 
-    document.addEventListener('click', () => {
-      const audio = document.getElementById('bgMusic');
-      if(audio.paused && audio.currentTime === 0) {
-        audio.play().catch(() => {});
-      }
-    }, { once: true });
-
-    // SINKRONISASI DATA HEADER PENGGUNA (DEFAULT NETRAL)
-    function muatHeader() {
-      const dataHeader = JSON.parse(localStorage.getItem('headerGuruData')) || {
-        foto: localStorage.getItem('fotoGuruURL') || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
-        sekolah: "NAMA SEKOLAH",
-        namaGuru: "NAMA GURU, S.Pd.",
-        motto: "MOTTO SEKOLAH",
-        ta: "2026/2027",
-        sem: "Sem. Ganjil"
-      };
-
-      let displayMotto = (dataHeader.motto || "MOTTO SEKOLAH").replace(/^"|"$/g, '');
-
-      if (document.getElementById('fotoProfil')) document.getElementById('fotoProfil').src = dataHeader.foto;
-      if (document.getElementById('txtSekolah')) document.getElementById('txtSekolah').innerText = dataHeader.sekolah;
-      if (document.getElementById('txtGuru')) document.getElementById('txtGuru').innerText = dataHeader.namaGuru;
-      if (document.getElementById('txtMotto')) document.getElementById('txtMotto').innerText = `"${displayMotto}"`;
-      if (document.getElementById('txtSemesterTA')) {
-        document.getElementById('txtSemesterTA').innerText = `${dataHeader.sem || 'Sem. Ganjil'} • ${dataHeader.ta || ''}`;
-      }
-    }
-
-    function bukaModalHeader() {
-      const data = JSON.parse(localStorage.getItem('headerGuruData')) || {};
-      document.getElementById('inputNamaSekolah').value = data.sekolah || "NAMA SEKOLAH";
-      document.getElementById('inputNamaGuru').value = data.namaGuru || "NAMA GURU, S.Pd.";
-      document.getElementById('inputMotto').value = (data.motto || "MOTTO SEKOLAH").replace(/^"|"$/g, '');
-      document.getElementById('inputTA').value = data.ta || "2026/2027";
-      document.getElementById('inputSem').value = data.sem || "Sem. Ganjil";
-      document.getElementById('inputFoto').value = data.foto || "";
+    async function loadDashboardStats() {
+      const selectedKelas = document.getElementById('selectKelas').value;
+      const daftarSiswa = await db.siswa.where('kelas').equals(selectedKelas).toArray();
       
-      document.getElementById('modalHeader').classList.remove('hidden');
+      document.getElementById('statTotal').innerText = daftarSiswa.length;
+      document.getElementById('statLaki').innerText = daftarSiswa.filter(s => s.gender === 'L').length;
+      document.getElementById('statPerempuan').innerText = daftarSiswa.filter(s => s.gender === 'P').length;
+
+      const allAbsensi = await db.absensi.toArray();
+      document.getElementById('statSakit').innerText = allAbsensi.filter(a => a.status === 'S').length;
+      document.getElementById('statIzin').innerText = allAbsensi.filter(a => a.status === 'I').length;
+      document.getElementById('statAlpha').innerText = allAbsensi.filter(a => a.status === 'A').length;
+
+      loadTopRankings(daftarSiswa);
+      loadJadwalMengajar(selectedKelas);
     }
 
-    function tutupModalHeader() {
-      document.getElementById('modalHeader').classList.add('hidden');
+    async function loadTopRankings(daftarSiswa) {
+      const rankContainer = document.getElementById('topRankContainer');
+      rankContainer.innerHTML = '';
+      const rankings = [];
+
+      for (let s of daftarSiswa) {
+        const nilaiSiswa = await db.nilai.where('siswaId').equals(s.id).toArray();
+        const total = nilaiSiswa.reduce((sum, n) => sum + Number(n.nilai), 0);
+        const avg = nilaiSiswa.length > 0 ? (total / nilaiSiswa.length).toFixed(1) : 0;
+        rankings.push({ nama: s.nama, total, avg: Number(avg) });
+      }
+
+      rankings.sort((a, b) => b.avg - a.avg);
+      const top5 = rankings.slice(0, 5);
+
+      if (top5.length === 0) {
+        rankContainer.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-4">Belum ada data nilai untuk kelas ini.</p>`;
+        return;
+      }
+
+      const medals = ['🥇', '🥈', '🥉', '#4', '#5'];
+      top5.forEach((item, index) => {
+        const medalOrNum = index < 3 ? `<span class="text-xl">${medals[index]}</span>` : `<span class="font-black text-xs text-slate-500 w-6 text-center">${medals[index]}</span>`;
+        rankContainer.innerHTML += `
+          <div class="glass-item p-3 rounded-2xl flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+              ${medalOrNum}
+              <span class="font-black text-xs text-slate-800 uppercase tracking-wide">${item.nama}</span>
+            </div>
+            <div class="text-right">
+              <p class="text-[9px] font-bold text-slate-400">TOTAL: ${item.total}</p>
+              <p class="text-xs font-black text-emerald-600">AVG: ${item.avg}</p>
+            </div>
+          </div>
+        `;
+      });
     }
 
-    function simpanHeaderModal() {
-      const dataLama = JSON.parse(localStorage.getItem('headerGuruData')) || {};
-      const dataBaru = {
-        foto: document.getElementById('inputFoto').value || dataLama.foto || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
-        sekolah: document.getElementById('inputNamaSekolah').value,
-        namaGuru: document.getElementById('inputNamaGuru').value,
-        nip: dataLama.nip || "",
-        motto: document.getElementById('inputMotto').value,
-        ta: document.getElementById('inputTA').value,
-        sem: document.getElementById('inputSem').value
-      };
+    async function loadJadwalMengajar(selectedKelas) {
+      const container = document.getElementById('gridJadwalContainer');
+      container.innerHTML = '';
 
-      localStorage.setItem('headerGuruData', JSON.stringify(dataBaru));
-      localStorage.setItem('fotoGuruURL', dataBaru.foto);
+      const daftarJadwal = await db.jadwal.where('kelas').equals(selectedKelas).toArray();
 
-      muatHeader();
-      tutupModalHeader();
-    }
+      if (daftarJadwal.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full glass-inner p-8 rounded-3xl text-center text-slate-500 italic text-sm">
+            Belum ada jadwal mengajar untuk <b>${selectedKelas}</b>. Klik tombol <b>+ Tambah Jadwal</b> di atas untuk menambahkan!
+          </div>`;
+        return;
+      }
 
-    window.addEventListener('DOMContentLoaded', () => {
+      const urutanHari = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
+      
+      urutanHari.forEach(hari => {
+        const jadwalHariIni = daftarJadwal.filter(j => j.hari.toUpperCase() === hari);
+        if (jadwalHariIni.length > 0) {
+          let listHtml = '';
+          jadwalHariIni.forEach(item => {
+            const jamFormatted = item.jam.replace(' - ', '<br>');
+            listHtml += `
+              <div class="glass-item p-3 rounded-2xl flex items-center justify-between shadow-sm group">
+                <div class="flex items-center gap-3">
+                  <div class="bg-slate-100 text-slate-700 text-[10px] font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 text-center leading-tight">
+                    ${jamFormatted}
+                  </div>
+                  <div>
+                    <h4 class="font-black text-xs theme-active-text">${item.mapel}</h4>
+                    <p class="text-[10px] font-bold text-slate-500 flex items-center gap-1 mt-0.5">
+                      <i data-lucide="user" class="w-3 h-3 text-slate-400"></i> ${item.guru}
+                    </p>
+                  </div>
+                </div>
+                <button onclick="hapusJadwal(${item.id})" class="opacity-0 group-hover:opacity-100 p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Hapus Jadwal">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            `;
+          });
+
+          container.innerHTML += `
+            <div class="glass-inner rounded-3xl p-4">
+              <div class="bg-purple-200/50 text-purple-900 text-center font-black text-xs py-2 rounded-2xl mb-3 tracking-wider uppercase border border-purple-300/40">
+                ${hari}
+              </div>
+              <div class="space-y-2.5">${listHtml}</div>
+            </div>
+          `;
+        }
+      });
+      
       lucide.createIcons();
-      muatHeader();
+    }
+
+    function bukaModalJadwal() {
+      document.getElementById('modalJadwal').classList.remove('hidden');
+    }
+
+    function tutupModalJadwal() {
+      document.getElementById('modalJadwal').classList.add('hidden');
+    }
+
+    async function simpanJadwalBaru() {
+      const selectedKelas = document.getElementById('selectKelas').value;
+      const hari = document.getElementById('inputHari').value;
+      const jam = document.getElementById('inputJam').value;
+      const mapel = document.getElementById('inputMapel').value;
+      const guru = document.getElementById('inputGuru').value;
+
+      if (!jam || !mapel || !guru) {
+        alert('Harap isi semua data jadwal!');
+        return;
+      }
+
+      await db.jadwal.add({
+        hari,
+        jam,
+        mapel,
+        guru,
+        kelas: selectedKelas
+      });
+
+      tutupModalJadwal();
+      document.getElementById('inputJam').value = '';
+      document.getElementById('inputMapel').value = '';
+      document.getElementById('inputGuru').value = '';
+
+      loadJadwalMengajar(selectedKelas);
+    }
+
+    async function hapusJadwal(id) {
+      if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
+        await db.jadwal.delete(id);
+        const selectedKelas = document.getElementById('selectKelas').value;
+        loadJadwalMengajar(selectedKelas);
+      }
+    }
+
+    function gantiKelas(val) {
+      document.getElementById('badgeKelasJadwal').innerText = val;
+      loadDashboardStats();
+    }
+
+    function startClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('realtimeClock').innerText = '🕒 ' + now.toLocaleTimeString('id-ID');
+        document.getElementById('realtimeDate').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      }, 1000);
+    }
+
+    function setThemeColor(colorName) {
+      const body = document.getElementById('appBody');
+      body.classList.remove('theme-blue', 'theme-emerald', 'theme-purple', 'theme-amber');
+      body.classList.add(`theme-${colorName}`);
+      localStorage.setItem('prefThemeColor', colorName);
+    }
+
+    function toggleDarkMode(isDark) {
+      const body = document.getElementById('appBody');
+      const icon = document.getElementById('modeIcon');
+      if (isDark) {
+        body.classList.add('dark-mode');
+        icon.innerText = '🌙';
+      } else {
+        body.classList.remove('dark-mode');
+        icon.innerText = '☀️';
+      }
+      localStorage.setItem('prefDarkMode', isDark);
+    }
+
+    function changeZoom(val) {
+      document.body.style.zoom = `${val}%`;
+      document.getElementById('zoomVal').innerText = `${val}%`;
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    let isLocked = false;
+    function toggleLock() {
+      isLocked = !isLocked;
+      const icon = document.getElementById('iconLock');
+      if (isLocked) {
+        alert('Aplikasi Dikunci!');
+        icon.setAttribute('data-lucide', 'lock-keyhole');
+      } else {
+        alert('Aplikasi Terbuka!');
+        icon.setAttribute('data-lucide', 'lock');
+      }
+      lucide.createIcons();
+    }
+
+    function gantiFoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('fotoProfil').src = e.target.result;
+          localStorage.setItem('fotoGuruURL', e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function exportDataJSON() {
+      const dataSiswa = await db.siswa.toArray();
+      const blob = new Blob([JSON.stringify(dataSiswa, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Backup_Data_Siswa_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+    }
+
+    function refreshData() {
+      loadDashboardStats();
+      alert('Data Berhasil Diperbarui!');
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      lucide.createIcons();
+      startClock();
+      await seedDatabase();
+      loadDashboardStats();
+
+      const savedTheme = localStorage.getItem('prefThemeColor');
+      if (savedTheme) setThemeColor(savedTheme);
+
+      const savedDark = localStorage.getItem('prefDarkMode') === 'true';
+      if (savedDark) {
+        document.getElementById('darkModeToggle').checked = true;
+        toggleDarkMode(true);
+      }
+
+      if (localStorage.getItem('fotoGuruURL')) {
+        document.getElementById('fotoProfil').src = localStorage.getItem('fotoGuruURL');
+      }
     });
   </script>
+<!-- KODE BACKSOUND MUSIK MP3 -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="Bayalangu.mp3" type="audio/mpeg">
+</audio>
+
+<!-- TOMBOL MUSIK MELAYANG DI POJOK KANAN BAWAH -->
+<button id="musicBtn" onclick="toggleMusic()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #2563eb; color: white; border: none; padding: 10px 18px; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+  🎵 Putar Musik
+</button>
+
+<script>
+  var audio = document.getElementById("bgMusic");
+  var btn = document.getElementById("musicBtn");
+
+  // Fungsi untuk menyalakan/mematikan musik lewat tombol
+  function toggleMusic() {
+    if (audio.paused) {
+      audio.play().then(() => {
+        btn.innerHTML = "⏸️ Hentikan Musik";
+        btn.style.background = "#dc2626"; // Tombol jadi MERAH saat musik jalan
+      }).catch(err => {
+        alert("Gagal memutar suara! Pastikan browser diizinkan memutar audio.");
+      });
+    } else {
+      audio.pause();
+      btn.innerHTML = "🎵 Putar Musik";
+      btn.style.background = "#2563eb"; // Tombol jadi BIRU saat musik mati
+    }
+  }
+
+  // FITUR UTAMA: Coba putar otomatis saat klik pertama di mana saja pada layar
+  document.addEventListener('click', function() {
+    if (audio.paused) {
+      audio.play().then(() => {
+        btn.innerHTML = "⏸️ Hentikan Musik";
+        btn.style.background = "#dc2626";
+      }).catch(() => {
+        // Jika autoplay diblokir total, tombol tetap biru "Putar Musik"
+      });
+    }
+  }, { once: true }); // Hanya berjalan sekali saat klik pertama
+</script>
+
+</body>
+</html>
+
 </body>
 </html>
