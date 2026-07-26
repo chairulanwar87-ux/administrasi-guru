@@ -650,7 +650,23 @@
       loadDashboardStats();
       alert('Data Berhasil Diperbarui!');
     }
+function updateHeaderInfo() {
+    const sekolah = localStorage.getItem("schoolName");
+    const guru = localStorage.getItem("teacherName");
+    const motto = localStorage.getItem("mottoText");
 
+    if (sekolah) {
+        document.getElementById("schoolName").textContent = sekolah;
+    }
+
+    if (guru) {
+        document.getElementById("teacherName").textContent = guru;
+    }
+
+    if (motto) {
+        document.getElementById("mottoText").textContent = motto;
+    }
+}
     window.addEventListener('DOMContentLoaded', async () => {
       lucide.createIcons();
       startClock();
@@ -717,5 +733,4 @@ updateHeaderInfo();
 </body>
 </html>
 
-</body>
-</html>
+
