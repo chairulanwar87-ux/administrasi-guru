@@ -89,7 +89,7 @@
   </div>
 
   <script>
-    // FUNGSI MEMUAT DATA SAAT HALAMAN DIBUKA
+    // MEMUAT DATA SAAT HALAMAN DIBUKA
     function muatProfil() {
       // Membaca kunci localStorage 'headerGuruData' yang sama dengan index.html
       const data = JSON.parse(localStorage.getItem('headerGuruData')) || {
@@ -97,7 +97,7 @@
         sekolah: "SD NEGERI 1 GUWA LOR",
         namaGuru: "CHAIRUL ANWAR, S.Pd.",
         nip: "198007082022211005",
-        motto: "BERGELORA",
+        motto: '"BERGELORA"',
         ta: "2026/2027",
         sem: "Sem. Ganjil"
       };
@@ -106,20 +106,23 @@
       document.getElementById('profNip').value = data.nip || '';
       document.getElementById('profSekolah').value = data.sekolah || '';
       document.getElementById('profTA').value = data.ta || '';
-      document.getElementById('profMotto').value = data.motto || '';
+      
+      // Bersihkan tanda petik saat ditampilkan di input form agar mudah diedit
+      let mottoClean = data.motto ? data.motto.replace(/^"|"$/g, '') : '';
+      document.getElementById('profMotto').value = mottoClean;
+      
       document.getElementById('profFoto').value = data.foto || '';
     }
 
-    // FUNGSI MENYIMPAN DATA KE LOCALSTORAGE
+    // MENYIMPAN DATA KE LOCALSTORAGE
     function simpanProfil(e) {
       e.preventDefault();
 
-      // Ambil data lama agar variabel 'sem' tidak hilang
       const dataLama = JSON.parse(localStorage.getItem('headerGuruData')) || {};
 
       let mottoInput = document.getElementById('profMotto').value.trim();
       
-      // Rapikan tanda petik pada motto agar rapi
+      // Memberikan tanda petik otomatis pada Motto
       if (mottoInput && !mottoInput.startsWith('"')) {
         mottoInput = `"${mottoInput}"`;
       }
@@ -138,7 +141,7 @@
       localStorage.setItem('headerGuruData', JSON.stringify(dataBaru));
       localStorage.setItem('fotoGuruURL', dataBaru.foto);
 
-      alert('✅ Profil berhasil diperbarui! Silakan klik tombol KEMBALI untuk melihat perubahan di Header Dashboard.');
+      alert('✅ Profil berhasil diperbarui! Silakan klik KEMBALI untuk melihat perubahan di Header Dashboard.');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
