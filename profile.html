@@ -48,7 +48,7 @@
           
           <div>
             <label class="block mb-1.5 font-bold">Nama Lengkap Guru (dengan Gelar)</label>
-            <input type="text" id="profNamaGuru" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500" required>
+            <input type="text" id="profNamaGuru" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
           <div>
@@ -58,7 +58,7 @@
 
           <div>
             <label class="block mb-1.5 font-bold">Nama Sekolah</label>
-            <input type="text" id="profSekolah" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500" required>
+            <input type="text" id="profSekolah" class="w-full px-4 py-2.5 rounded-xl bg-white/80 border border-slate-200 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
           <div>
@@ -90,26 +90,17 @@
 
   <script>
     function muatProfil() {
-      // Ambil data profil tersimpan
-      const data = JSON.parse(localStorage.getItem('headerGuruData')) || {
-        foto: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
-        sekolah: "SD NEGERI 1 GUWA LOR",
-        namaGuru: "CHAIRUL ANWAR, S.Pd.",
-        nip: "198007082022211005",
-        motto: "BERGERAK",
-        ta: "2026/2027",
-        sem: "Sem. Ganjil"
-      };
+      // Baca data dari 'headerGuruData'
+      const data = JSON.parse(localStorage.getItem('headerGuruData')) || {};
 
-      document.getElementById('profNamaGuru').value = data.namaGuru || '';
-      document.getElementById('profNip').value = data.nip || '';
-      document.getElementById('profSekolah').value = data.sekolah || '';
-      document.getElementById('profTA').value = data.ta || '';
+      document.getElementById('profNamaGuru').value = data.namaGuru || "CHAIRUL ANWAR, S.Pd.";
+      document.getElementById('profNip').value = data.nip || localStorage.getItem('nipGuru') || "198007082022211005";
+      document.getElementById('profSekolah').value = data.sekolah || "SD NEGERI 1 GUWA LOR";
+      document.getElementById('profTA').value = data.ta || "2026/2027";
       
-      // Bersihkan tanda petik agar mudah diedit
-      let mottoClean = (data.motto || '').replace(/^"|"$/g, '');
+      let mottoClean = (data.motto || "BERGELORA").replace(/^"|"$/g, '');
       document.getElementById('profMotto').value = mottoClean;
-      document.getElementById('profFoto').value = data.foto || '';
+      document.getElementById('profFoto').value = data.foto || localStorage.getItem('fotoGuruURL') || "";
     }
 
     function simpanProfil(e) {
@@ -118,8 +109,13 @@
       const dataLama = JSON.parse(localStorage.getItem('headerGuruData')) || {};
       let mottoInput = document.getElementById('profMotto').value.trim();
 
+      // Format motto pakai petik jika diisi
+      if (mottoInput && !mottoInput.startsWith('"')) {
+        mottoInput = `"${mottoInput}"`;
+      }
+
       const dataBaru = {
-        foto: document.getElementById('profFoto').value || dataLama.foto || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
+        foto: document.getElementById('profFoto').value || dataLama.foto || "",
         sekolah: document.getElementById('profSekolah').value,
         namaGuru: document.getElementById('profNamaGuru').value,
         nip: document.getElementById('profNip').value,
@@ -128,9 +124,10 @@
         sem: dataLama.sem || "Sem. Ganjil"
       };
 
-      // Simpan data secara menyeluruh
+      // Simpan ke semua lokasi kunci penyimpanan
       localStorage.setItem('headerGuruData', JSON.stringify(dataBaru));
-      localStorage.setItem('fotoGuruURL', dataBaru.foto);
+      if (dataBaru.foto) localStorage.setItem('fotoGuruURL', dataBaru.foto);
+      localStorage.setItem('nipGuru', dataBaru.nip);
 
       alert('✅ Profil berhasil diperbarui!');
       window.location.href = 'index.html';
