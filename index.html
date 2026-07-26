@@ -432,15 +432,45 @@
     let tempFotoBase64 = null;
 
     // --- LOGIKA EDIT PROFIL & HEADER ---
-    function muatHeader() {
-      const dataHeader = JSON.parse(localStorage.getItem('headerGuruData')) || {
-        foto: localStorage.getItem('fotoGuruURL') || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
-        sekolah: "SD NEGERI 1 GUWA LOR",
-        namaGuru: "CHAIRUL ANWAR, S.Pd",
-        motto: '"BERGELORA"',
-        ta: "2026/2027",
-        sem: "Sem. Ganjil"
-      };
+   function muatHeader() {
+  // Ambil data dari localStorage 'headerGuruData'
+  const dataHeader = JSON.parse(localStorage.getItem('headerGuruData')) || {
+    foto: localStorage.getItem('fotoGuruURL') || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
+    sekolah: "SD NEGERI 1 GUWA LOR",
+    namaGuru: "CHAIRUL ANWAR, S.Pd.",
+    motto: '"BERGELORA"',
+    ta: "2026/2027",
+    sem: "Sem. Ganjil"
+  };
+
+  // Tempelkan data ke Tampilan Header secara Dinamis
+  if (document.getElementById('fotoProfil') && dataHeader.foto) {
+    document.getElementById('fotoProfil').src = dataHeader.foto;
+  }
+  if (document.getElementById('txtSekolah')) {
+    document.getElementById('txtSekolah').innerText = dataHeader.sekolah;
+  }
+  if (document.getElementById('txtGuru')) {
+    document.getElementById('txtGuru').innerText = dataHeader.namaGuru;
+  }
+  if (document.getElementById('txtMotto')) {
+    document.getElementById('txtMotto').innerText = dataHeader.motto || '';
+  }
+  if (document.getElementById('txtSemesterTA')) {
+    document.getElementById('txtSemesterTA').innerText = `${dataHeader.sem || 'Sem. Ganjil'} • ${dataHeader.ta || ''}`;
+  }
+
+  // Isikan juga ke Form Modal Edit Header jika dibuka
+  if (document.getElementById('inputNamaSekolah')) document.getElementById('inputNamaSekolah').value = dataHeader.sekolah;
+  if (document.getElementById('inputNamaGuru')) document.getElementById('inputNamaGuru').value = dataHeader.namaGuru;
+  if (document.getElementById('inputMotto')) document.getElementById('inputMotto').value = dataHeader.motto;
+  if (document.getElementById('inputTA')) document.getElementById('inputTA').value = dataHeader.ta;
+  if (document.getElementById('inputSem')) document.getElementById('inputSem').value = dataHeader.sem || "Sem. Ganjil";
+  
+  if (typeof tempFotoBase64 !== 'undefined') {
+    tempFotoBase64 = dataHeader.foto;
+  }
+}
 
       document.getElementById('fotoProfil').src = dataHeader.foto;
       document.getElementById('txtSekolah').innerText = dataHeader.sekolah;
