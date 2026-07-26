@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrasi Digital Guru</title>
+    <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .glass-header {
-            background: rgba(255, 255, 255, 0.85);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
     </style>
 </head>
@@ -18,33 +20,22 @@
 
     <div class="min-h-screen flex flex-col bg-slate-900/40 backdrop-blur-[2px]">
         
-        <!-- HEADER UTAMA -->
+        <!-- HEADER UTAMA ASLI / SEMULA -->
         <header class="p-3 md:p-4">
-            <div class="max-w-7xl mx-auto glass-header rounded-2xl p-3 md:p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+            <div class="max-w-7xl mx-auto glass-card rounded-2xl p-3 md:p-4 shadow-xl flex items-center justify-between gap-4">
                 
-                <!-- PROFIL & IDENTITAS -->
+                <!-- KIRI: Foto & Identitas -->
                 <div class="flex items-center gap-3">
-                    <!-- Foto Profil (Bisa Diklik Untuk Ubah Link Foto) -->
-                    <div class="relative group cursor-pointer" onclick="ubahFoto()" title="Klik untuk ubah foto">
-                        <img id="headerFoto" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250" class="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-indigo-600 object-cover shadow-md">
-                        <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-[10px] font-bold">Ubah</div>
-                    </div>
-
+                    <img id="headerFoto" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250" alt="Foto Guru" class="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-white object-cover shadow-md">
                     <div>
                         <h1 class="text-base md:text-xl font-black text-blue-600 tracking-wide uppercase leading-tight">
                             ADMINISTRASI DIGITAL GURU
                         </h1>
-                        
-                        <!-- Teks Info (Bisa Diklik Pengguna Langsung untuk Edit) -->
-                        <div onclick="editProfilLangsung()" class="cursor-pointer hover:bg-slate-200/60 p-1 -ml-1 rounded-lg transition" title="Klik untuk edit Nama / Sekolah / Motto">
-                            <p class="text-xs md:text-sm font-bold text-slate-800 tracking-tight flex items-center gap-1">
-                                <span id="dispSekolah">SD NEGERI 1 GUWA LOR</span> • 
-                                <span id="dispGuru">CHAIRUL ANWAR, S.Pd</span> • 
-                                "<span id="dispMotto" class="italic">BERGELORA</span>"
-                                <i data-lucide="pencil" class="w-3 h-3 text-indigo-600 ml-1"></i>
-                            </p>
-                        </div>
-
+                        <p class="text-xs md:text-sm font-bold text-slate-700 tracking-tight">
+                            <span id="dispSekolah">SD NEGERI 1 GUWA LOR</span> • 
+                            <span id="dispGuru">CHAIRUL ANWAR, S.Pd</span> • 
+                            "<span id="dispMotto" class="italic">BERGELORA</span>"
+                        </p>
                         <div class="flex items-center gap-2 mt-0.5 text-[11px] font-semibold text-slate-600">
                             <span class="flex items-center gap-1 text-blue-600 font-bold">
                                 <i data-lucide="clock" class="w-3.5 h-3.5"></i> <span id="jamDigital">16.00.00</span>
@@ -56,12 +47,9 @@
                     </div>
                 </div>
 
-                <!-- MENU KANAN -->
-                <div class="flex items-center gap-2 ml-auto">
-                    <button onclick="editProfilLangsung()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1">
-                        <i data-lucide="user-cog" class="w-4 h-4"></i> Ubah Profil Saya
-                    </button>
-                    <a href="pengaturan.html" class="p-2 bg-white hover:bg-slate-100 rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Pengaturan Lanjutan">
+                <!-- KANAN: Tombol Pengaturan (Icon Gear Semula) -->
+                <div class="flex items-center gap-2">
+                    <a href="pengaturan.html" class="p-2 bg-white hover:bg-slate-100 rounded-xl border border-slate-300 text-slate-700 shadow-sm transition" title="Pengaturan">
                         <i data-lucide="settings" class="w-4 h-4"></i>
                     </a>
                 </div>
@@ -69,84 +57,70 @@
             </div>
         </header>
 
-        <!-- MENU DASHBOARD -->
+        <!-- DASHBOARD MENU UTAMA SEMULA -->
         <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-2 md:grid-cols-4 gap-4">
-            <a href="siswa.html" class="glass-header p-5 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center">
-                <div class="p-3 bg-blue-500 text-white rounded-xl mb-2"><i data-lucide="users" class="w-6 h-6"></i></div>
+            
+            <a href="siswa.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
+                <div class="p-4 bg-blue-500 text-white rounded-2xl mb-3 group-hover:bg-blue-600 transition shadow-md">
+                    <i data-lucide="users" class="w-7 h-7"></i>
+                </div>
                 <span class="font-bold text-sm text-slate-800">Data Siswa</span>
             </a>
-            <a href="nilai.html" class="glass-header p-5 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center">
-                <div class="p-3 bg-emerald-500 text-white rounded-xl mb-2"><i data-lucide="graduation-cap" class="w-6 h-6"></i></div>
+
+            <a href="nilai.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
+                <div class="p-4 bg-emerald-500 text-white rounded-2xl mb-3 group-hover:bg-emerald-600 transition shadow-md">
+                    <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                </div>
                 <span class="font-bold text-sm text-slate-800">Input Nilai</span>
             </a>
-            <a href="rekap.html" class="glass-header p-5 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center">
-                <div class="p-3 bg-amber-500 text-white rounded-xl mb-2"><i data-lucide="calendar-check" class="w-6 h-6"></i></div>
+
+            <a href="rekap.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
+                <div class="p-4 bg-amber-500 text-white rounded-2xl mb-3 group-hover:bg-amber-600 transition shadow-md">
+                    <i data-lucide="calendar-check" class="w-7 h-7"></i>
+                </div>
                 <span class="font-bold text-sm text-slate-800">Absensi Siswa</span>
             </a>
-            <a href="rapor.html" class="glass-header p-5 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center">
-                <div class="p-3 bg-rose-500 text-white rounded-xl mb-2"><i data-lucide="file-spreadsheet" class="w-6 h-6"></i></div>
+
+            <a href="rapor.html" class="glass-card p-6 rounded-2xl shadow-lg hover:scale-[1.02] transition flex flex-col items-center justify-center text-center group">
+                <div class="p-4 bg-rose-500 text-white rounded-2xl mb-3 group-hover:bg-rose-600 transition shadow-md">
+                    <i data-lucide="file-spreadsheet" class="w-7 h-7"></i>
+                </div>
                 <span class="font-bold text-sm text-slate-800">Cetak Rapor</span>
             </a>
+
         </main>
+
+        <footer class="text-center py-4 text-xs text-white/80 font-medium">
+            &copy; Aplikasi Administrasi Guru Digital
+        </footer>
     </div>
 
+    <!-- JAVASCRIPT ASLI -->
     <script>
         lucide.createIcons();
 
-        // 1. BUKA POPUP UNTUK EDIT NAMA, SEKOLAH, & MOTTO
-        function editProfilLangsung() {
-            const profilLama = JSON.parse(localStorage.getItem('profilSekolahGuru')) || {
-                namaSekolah: "SD NEGERI 1 GUWA LOR",
-                namaGuru: "CHAIRUL ANWAR, S.Pd",
-                motto: "BERGELORA"
-            };
-
-            const sekolahBaru = prompt("Masukkan Nama Sekolah Anda:", profilLama.namaSekolah);
-            if (sekolahBaru === null) return;
-
-            const guruBaru = prompt("Masukkan Nama Lengkap & Gelar Anda:", profilLama.namaGuru);
-            if (guruBaru === null) return;
-
-            const mottoBaru = prompt("Masukkan Motto Anda / Sekolah:", profilLama.motto);
-            if (mottoBaru === null) return;
-
-            profilLama.namaSekolah = sekolahBaru;
-            profilLama.namaGuru = guruBaru;
-            profilLama.motto = mottoBaru;
-
-            localStorage.setItem('profilSekolahGuru', JSON.stringify(profilLama));
-            tampilkanData();
-            alert("Profil berhasil diperbarui!");
-        }
-
-        // 2. BUKA POPUP EDIT LINK FOTO PROFIL
-        function ubahFoto() {
-            const profilLama = JSON.parse(localStorage.getItem('profilSekolahGuru')) || {};
-            const fotoBaru = prompt("Masukkan URL/Link Foto Profil Anda:", profilLama.foto || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250");
-            
-            if (fotoBaru !== null) {
-                profilLama.foto = fotoBaru;
-                localStorage.setItem('profilSekolahGuru', JSON.stringify(profilLama));
-                tampilkanData();
-            }
-        }
-
-        // 3. TAMPILKAN DATA KE HEADER
-        function tampilkanData() {
+        // Memuat profil dari localStorage (jika ada yang diedit dari pengaturan.html)
+        function muatData() {
             const profil = JSON.parse(localStorage.getItem('profilSekolahGuru')) || {
                 namaSekolah: "SD NEGERI 1 GUWA LOR",
                 namaGuru: "CHAIRUL ANWAR, S.Pd",
                 motto: "BERGELORA",
+                tahunAjaran: "2026/2027",
                 foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250"
             };
 
             document.getElementById('dispSekolah').innerText = profil.namaSekolah || "SD NEGERI 1 GUWA LOR";
             document.getElementById('dispGuru').innerText = profil.namaGuru || "CHAIRUL ANWAR, S.Pd";
             document.getElementById('dispMotto').innerText = profil.motto || "BERGELORA";
-            if (profil.foto) document.getElementById('headerFoto').src = profil.foto;
+            if (document.getElementById('headerTA')) {
+                document.getElementById('headerTA').innerText = `Sem. Ganjil • ${profil.tahunAjaran || '2026/2027'}`;
+            }
+            if (profil.foto && document.getElementById('headerFoto')) {
+                document.getElementById('headerFoto').src = profil.foto;
+            }
         }
 
-        // 4. JAM DIGITAL
+        // Jam Digital
         function updateJam() {
             const now = new Date();
             document.getElementById('jamDigital').innerText = `${String(now.getHours()).padStart(2,'0')}.${String(now.getMinutes()).padStart(2,'0')}.${String(now.getSeconds()).padStart(2,'0')}`;
@@ -154,7 +128,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            tampilkanData();
+            muatData();
             updateJam();
             setInterval(updateJam, 1000);
         });
