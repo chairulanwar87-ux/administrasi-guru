@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengaturan - Administrasi Guru</title>
+    <title>Pengaturan Profil - Administrasi Guru</title>
     <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .glass-card {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
         .glass-input {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             border: 1px solid rgba(203, 213, 225, 0.8);
         }
     </style>
@@ -27,7 +27,7 @@
         <header class="p-4 md:px-8">
             <div class="max-w-4xl mx-auto flex justify-between items-center glass-card rounded-2xl p-4 shadow-lg">
                 <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i data-lucide="settings" class="w-5 h-5 text-indigo-600"></i> PENGATURAN APLIKASI
+                    <i data-lucide="settings" class="w-5 h-5 text-indigo-600"></i> PENGATURAN PROFIL
                 </h1>
                 <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shadow-md transition">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> KEMBALI
@@ -38,16 +38,19 @@
         <!-- CONTENT -->
         <main class="max-w-4xl mx-auto px-4 md:px-8 py-4 flex-1 w-full space-y-4">
             
-            <!-- Form Identitas -->
+            <!-- FORM IDENTITAS & PROFIL -->
             <div class="glass-card rounded-2xl p-6 md:p-8 shadow-xl">
                 <h2 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2 border-b border-slate-300/60 pb-3">
-                    <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i> Identitas Guru & Sekolah
+                    <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i> Ubah Profil Pengguna & Sekolah
                 </h2>
+                
                 <form id="formPengaturan" class="space-y-4" onsubmit="simpanPengaturan(event)">
+                    
+                    <!-- BARIS 1: NAMA GURU & NIP -->
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Guru</label>
-                            <input type="text" id="cfgNamaGuru" placeholder="Nama & Gelar" class="w-full px-3 py-2 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-medium" required>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Guru (dengan Gelar)</label>
+                            <input type="text" id="cfgNamaGuru" placeholder="Contoh: CHAIRUL ANWAR, S.Pd" class="w-full px-3 py-2 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-medium" required>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">NIP / NUPTK</label>
@@ -55,10 +58,11 @@
                         </div>
                     </div>
 
+                    <!-- BARIS 2: NAMA SEKOLAH & TAHUN AJARAN -->
                     <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Nama Sekolah</label>
-                            <input type="text" id="cfgNamaSekolah" placeholder="Nama Instansi/Sekolah" class="w-full px-3 py-2 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-medium" required>
+                            <input type="text" id="cfgNamaSekolah" placeholder="Contoh: SD NEGERI 1 GUWA LOR" class="w-full px-3 py-2 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-medium" required>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Tahun Ajaran</label>
@@ -66,20 +70,33 @@
                         </div>
                     </div>
 
-                    <div class="pt-2 flex justify-end">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-md flex items-center gap-2">
-                            <i data-lucide="save" class="w-4 h-4"></i> SIMPAN PENGATURAN
+                    <!-- BARIS 3: MOTTO & URL FOTO PROFIL -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Motto Guru / Sekolah</label>
+                            <input type="text" id="cfgMotto" placeholder="Contoh: BERGELORA" class="w-full px-3 py-2 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-medium" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">URL / Link Foto Profil</label>
+                            <input type="text" id="cfgFoto" placeholder="https://link-foto-anda.com/foto.jpg" class="w-full px-3 py-2 glass-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs font-medium">
+                        </div>
+                    </div>
+
+                    <!-- TOMBOL SIMPAN -->
+                    <div class="pt-4 flex justify-end">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md flex items-center gap-2">
+                            <i data-lucide="save" class="w-4 h-4"></i> SIMPAN PROFIL SAYA
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Backup Data -->
+            <!-- BACKUP DATA -->
             <div class="glass-card rounded-2xl p-6 md:p-8 shadow-xl">
                 <h2 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
                     <i data-lucide="database" class="w-4 h-4 text-indigo-600"></i> Cadangan Data (Backup)
                 </h2>
-                <p class="text-xs text-slate-600 mb-4">Simpan atau pulihkan file cadangan administrasi guru.</p>
+                <p class="text-xs text-slate-600 mb-4">Simpan atau pulihkan file data administrasi pengguna.</p>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="unduhBackup()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md flex items-center gap-2">
                         <i data-lucide="download" class="w-4 h-4"></i> UNDUH CADANGAN
@@ -94,40 +111,50 @@
         </main>
 
         <footer class="text-center py-4 text-xs text-white/80 font-medium">
-            &copy; Aplikasi Administrasi Guru
+            &copy; Aplikasi Administrasi Guru Digital
         </footer>
     </div>
 
+    <!-- JAVASCRIPT UNTUK PENYIMPANAN DATA -->
     <script>
         lucide.createIcons();
 
+        // 1. MUAT DATA SAAT HALAMAN DIBUKA
         document.addEventListener('DOMContentLoaded', () => {
             const profil = JSON.parse(localStorage.getItem('profilSekolahGuru')) || {
-                namaGuru: "Chairul Anwar, S.Pd.",
+                namaGuru: "CHAIRUL ANWAR, S.Pd",
                 nipGuru: "-",
                 namaSekolah: "SD NEGERI 1 GUWA LOR",
-                tahunAjaran: "2026/2027"
+                tahunAjaran: "2026/2027",
+                motto: "BERGELORA",
+                foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=250"
             };
 
             document.getElementById('cfgNamaGuru').value = profil.namaGuru || "";
             document.getElementById('cfgNipGuru').value = profil.nipGuru || "";
             document.getElementById('cfgNamaSekolah').value = profil.namaSekolah || "";
             document.getElementById('cfgTahunAjaran').value = profil.tahunAjaran || "";
+            document.getElementById('cfgMotto').value = profil.motto || "";
+            document.getElementById('cfgFoto').value = profil.foto || "";
         });
 
+        // 2. SIMPAN PROFIL
         function simpanPengaturan(e) {
             e.preventDefault();
             const dataProfil = {
                 namaGuru: document.getElementById('cfgNamaGuru').value,
                 nipGuru: document.getElementById('cfgNipGuru').value,
                 namaSekolah: document.getElementById('cfgNamaSekolah').value,
-                tahunAjaran: document.getElementById('cfgTahunAjaran').value
+                tahunAjaran: document.getElementById('cfgTahunAjaran').value,
+                motto: document.getElementById('cfgMotto').value,
+                foto: document.getElementById('cfgFoto').value
             };
 
             localStorage.setItem('profilSekolahGuru', JSON.stringify(dataProfil));
-            alert('Pengaturan berhasil disimpan! Data di Rapor otomatis terubah.');
+            alert('Profil berhasil diperbarui! Tampilan utama dan Rapor Anda otomatis terupdate.');
         }
 
+        // 3. UNDUH BACKUP
         function unduhBackup() {
             const dataToBackup = {
                 profil: JSON.parse(localStorage.getItem('profilSekolahGuru')),
@@ -139,10 +166,11 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup_administrasi_guru_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `backup_profil_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
         }
 
+        // 4. RESTORE BACKUP
         function restoreBackup(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -155,10 +183,10 @@
                     if (restoredData.siswa) localStorage.setItem('dataSiswaGuru', JSON.stringify(restoredData.siswa));
                     if (restoredData.absen) localStorage.setItem('rekapAbsenGuru', JSON.stringify(restoredData.absen));
                     
-                    alert('Data berhasil dipulihkan! Halaman akan memuat ulang.');
+                    alert('Data berhasil dipulihkan!');
                     location.reload();
                 } catch (err) {
-                    alert('Gagal membaca file cadangan. Pastikan file berformat .json yang valid.');
+                    alert('Gagal membaca file backup.');
                 }
             };
             reader.readAsText(file);
