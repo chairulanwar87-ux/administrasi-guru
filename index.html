@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administrasi Digital Guru</title>
+  <title>Dashboard Administrasi Guru</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
@@ -23,6 +23,9 @@
 </head>
 <body class="p-4 md:p-8 min-h-screen">
 
+  <!-- PEMUTAR MUSIK BACKGROUND -->
+  <audio id="bgMusic" autoplay loop src="Bayalangu.mp3"></audio>
+
   <div class="max-w-7xl mx-auto space-y-6">
     
     <!-- HEADER DASHBOARD -->
@@ -40,8 +43,11 @@
         </div>
       </div>
 
-      <!-- TOMBOL AKSI HEADER -->
-      <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+      <!-- TOMBOL AKSI HEADER & MUSIK -->
+      <div class="flex items-center gap-3 w-full md:w-auto justify-end flex-wrap">
+        <button id="btnMusik" onclick="toggleMusik()" class="bg-amber-500/80 hover:bg-amber-500 text-white px-3 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm transition">
+          <i data-lucide="volume-2" class="w-4 h-4"></i> <span id="txtMusik">Musik On</span>
+        </button>
         <button onclick="bukaModalHeader()" class="bg-white/80 hover:bg-white text-indigo-900 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border border-slate-200 shadow-sm transition">
           <i data-lucide="settings" class="w-4 h-4"></i> Edit Header
         </button>
@@ -51,15 +57,62 @@
       </div>
     </header>
 
-    <!-- CONTENT PLACEHOLDER -->
-    <main class="glass-card rounded-3xl p-8 text-center text-slate-700">
-      <h2 class="text-xl font-bold mb-2">Selamat Datang di Administrasi Digital</h2>
-      <p class="text-xs">Data profil dan header Anda telah tersinkronisasi secara otomatis.</p>
+    <!-- MENU UTAMA DASHBOARD (LENGKAP SEMUA KOTAK MENU) -->
+    <main class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      
+      <!-- MENU 1: MATA PELAJARAN -->
+      <a href="mapel.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
+        <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-3 group-hover:bg-blue-600 group-hover:text-white transition">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+        </div>
+        <span class="font-bold text-xs text-slate-800">Mata Pelajaran</span>
+      </a>
+
+      <!-- MENU 2: MODUL AJAR / RPP -->
+      <a href="modul.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition">
+          <i data-lucide="file-text" class="w-6 h-6"></i>
+        </div>
+        <span class="font-bold text-xs text-slate-800">Modul Ajar / RPP</span>
+      </a>
+
+      <!-- MENU 3: ABSENSI SISWA -->
+      <a href="absensi.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-3 group-hover:bg-emerald-600 group-hover:text-white transition">
+          <i data-lucide="calendar-check" class="w-6 h-6"></i>
+        </div>
+        <span class="font-bold text-xs text-slate-800">Absensi Siswa</span>
+      </a>
+
+      <!-- MENU 4: PENILAIAN -->
+      <a href="nilai.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-3 group-hover:bg-amber-600 group-hover:text-white transition">
+          <i data-lucide="award" class="w-6 h-6"></i>
+        </div>
+        <span class="font-bold text-xs text-slate-800">Penilaian</span>
+      </a>
+
+      <!-- MENU 5: REKAPITULASI -->
+      <a href="rekap.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
+        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-3 group-hover:bg-purple-600 group-hover:text-white transition">
+          <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+        </div>
+        <span class="font-bold text-xs text-slate-800">Rekapitulasi</span>
+      </a>
+
+      <!-- MENU 6: DATA SISWA -->
+      <a href="siswa.html" class="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center hover:scale-105 transition group">
+        <div class="w-12 h-12 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center mb-3 group-hover:bg-rose-600 group-hover:text-white transition">
+          <i data-lucide="users" class="w-6 h-6"></i>
+        </div>
+        <span class="font-bold text-xs text-slate-800">Data Siswa</span>
+      </a>
+
     </main>
 
   </div>
 
-  <!-- MODAL EDIT HEADER -->
+  <!-- MODAL POPUP EDIT HEADER -->
   <div id="modalHeader" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
     <div class="glass-card bg-white/90 rounded-3xl p-6 w-full max-w-lg space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
@@ -109,10 +162,30 @@
   </div>
 
   <script>
-    // FUNGSI UTAMA MEMUAT DATA HEADER
+    // KONTROL MUSIK BACKGROUND
+    function toggleMusik() {
+      const audio = document.getElementById('bgMusic');
+      const txt = document.getElementById('txtMusik');
+      if (audio.paused) {
+        audio.play();
+        txt.innerText = 'Musik On';
+      } else {
+        audio.pause();
+        txt.innerText = 'Musik Off';
+      }
+    }
+
+    document.addEventListener('click', () => {
+      const audio = document.getElementById('bgMusic');
+      if(audio.paused && audio.currentTime === 0) {
+        audio.play().catch(() => {});
+      }
+    }, { once: true });
+
+    // SINKRONISASI DATA HEADER PENGGUNA
     function muatHeader() {
       const dataHeader = JSON.parse(localStorage.getItem('headerGuruData')) || {
-        foto: "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
+        foto: localStorage.getItem('fotoGuruURL') || "https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=200",
         sekolah: "SD NEGERI 1 GUWA LOR",
         namaGuru: "CHAIRUL ANWAR, S.Pd.",
         motto: "BERGERAK",
@@ -120,21 +193,17 @@
         sem: "Sem. Ganjil"
       };
 
-      let displayMotto = dataHeader.motto ? dataHeader.motto.trim().replace(/^"|"$/g, '') : '';
-      if (displayMotto) {
-        displayMotto = `"${displayMotto}"`;
-      }
+      let displayMotto = (dataHeader.motto || "BERGERAK").replace(/^"|"$/g, '');
 
       if (document.getElementById('fotoProfil')) document.getElementById('fotoProfil').src = dataHeader.foto;
       if (document.getElementById('txtSekolah')) document.getElementById('txtSekolah').innerText = dataHeader.sekolah;
       if (document.getElementById('txtGuru')) document.getElementById('txtGuru').innerText = dataHeader.namaGuru;
-      if (document.getElementById('txtMotto')) document.getElementById('txtMotto').innerText = displayMotto;
+      if (document.getElementById('txtMotto')) document.getElementById('txtMotto').innerText = `"${displayMotto}"`;
       if (document.getElementById('txtSemesterTA')) {
         document.getElementById('txtSemesterTA').innerText = `${dataHeader.sem || 'Sem. Ganjil'} • ${dataHeader.ta || ''}`;
       }
     }
 
-    // MODAL EDIT HEADER HANDLER
     function bukaModalHeader() {
       const data = JSON.parse(localStorage.getItem('headerGuruData')) || {};
       document.getElementById('inputNamaSekolah').value = data.sekolah || "SD NEGERI 1 GUWA LOR";
